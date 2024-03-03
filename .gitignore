@@ -1,0 +1,24 @@
+# Build artifacts
+build/
+__pycache__/
+
+# Other artifacts
+.vscode/
+.venv/
+venv/
+logs/
+**/_test_outputs/*
+*.egg-info
+*.profile
+
+# IDE
+.idea/mcf.iml
+.idea/workspace.xml
+.idea/vcs.xml
+
+# Models
+*.pt
+*.onnx
+
+# Misc
+.DS_Store
