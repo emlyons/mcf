@@ -5,6 +5,7 @@ from mcf import Api as mcf_api
 def main(input_path):
     video = cv.VideoCapture(input_path)
 
+    # video metadata
     width = int(video.get(cv.CAP_PROP_FRAME_WIDTH))
     height = int(video.get(cv.CAP_PROP_FRAME_HEIGHT))
     frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
@@ -19,6 +20,7 @@ def main(input_path):
 
             mcf.add_frame(frame)
 
+            # call into api
             out_frame = mcf.next_result()
 
             cv.imshow(f'{width}x{height}, duration: {frames/fps}s  @ {fps}fps', frame)
@@ -33,5 +35,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="My Python Program")
     parser.add_argument('-i','--input', dest='input', help="path to .mp4 file", required=True)
     args = parser.parse_args()
-
     main(args.input)
+    
