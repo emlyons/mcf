@@ -20,7 +20,7 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        python3 -m pip install requirements.txt
+        python3 -m pip install -r requirements.txt
         python3 -m pip install .
     - name: run unit tests
       run: |
