@@ -12,7 +12,7 @@ class DataStore:
             self.data[key] = {}
         
         if field in self.data[key]:
-            status = DataStoreStatus.FIELD_COLLISION
+            status = DataStoreStatus.ERROR_FIELD_COLLISION
             
         if status == DataStoreStatus.SUCCESS:
             self.data[key][field] = value
@@ -25,10 +25,10 @@ class DataStore:
         value = None
 
         if key not in self.data:
-            status = DataStoreStatus.INVALID_KEY
+            status = DataStoreStatus.ERROR_INVALID_KEY
 
         if status == DataStoreStatus.SUCCESS and field not in self.data[key]:
-            status = DataStoreStatus.INVALID_FIELD
+            status = DataStoreStatus.ERROR_INVALID_FIELD
 
         if status == DataStoreStatus.SUCCESS:
             value = self.data[key][field]
@@ -39,10 +39,10 @@ class DataStore:
         status = DataStoreStatus.SUCCESS
         
         if key not in self.data:
-            status = DataStoreStatus.INVALID_KEY
+            status = DataStoreStatus.ERROR_INVALID_KEY
         
         if status == DataStoreStatus.SUCCESS and field not in self.data[key]:
-            status = DataStoreStatus.INVALID_FIELD
+            status = DataStoreStatus.ERROR_INVALID_FIELD
 
         if status == DataStoreStatus.SUCCESS:
             self.data[key].pop(field)
@@ -53,7 +53,7 @@ class DataStore:
         status = DataStoreStatus.SUCCESS
         
         if key not in self.data:
-            status = DataStoreStatus.INVALID_KEY
+            status = DataStoreStatus.ERROR_INVALID_KEY
 
         if status == DataStoreStatus.SUCCESS:
             self.data.pop(key)

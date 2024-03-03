@@ -31,7 +31,7 @@ class TestDataStore(unittest.TestCase):
 		status = self.data_store.put(key, field, value1)
 		status = self.data_store.put(key, field, value2)
 
-		self.assertEqual(DataStoreStatus.FIELD_COLLISION, status)
+		self.assertEqual(DataStoreStatus.ERROR_FIELD_COLLISION, status)
 
 	def test_put_replace(self):
 		key = 'key'
@@ -68,15 +68,15 @@ class TestDataStore(unittest.TestCase):
 		self.assertEqual(DataStoreStatus.SUCCESS, status)
 		self.assertEqual(value, observed_value)
 
-	def test_get_invalid_key(self):
+	def test_get_ERROR_INVALID_KEY(self):
 		key = 'key'
 		field = 'field'
 
 		status, observed_value = self.data_store.get(key, field)
 		
-		self.assertEqual(DataStoreStatus.INVALID_KEY, status)
+		self.assertEqual(DataStoreStatus.ERROR_INVALID_KEY, status)
 
-	def test_get_invalid_field(self):
+	def test_get_ERROR_INVALID_FIELD(self):
 		key = 'key'
 		field = 'field'
 		value = 123
@@ -84,7 +84,7 @@ class TestDataStore(unittest.TestCase):
 		_ = self.data_store.put(key, field, value)
 		status, observed_value = self.data_store.get(key, 'invalid field')
 		
-		self.assertEqual(DataStoreStatus.INVALID_FIELD, status)
+		self.assertEqual(DataStoreStatus.ERROR_INVALID_FIELD, status)
 
 	def test_get_collision_replace(self):
 		key = 'key'
@@ -137,15 +137,15 @@ class TestDataStore(unittest.TestCase):
 		
 		self.assertEqual(DataStoreStatus.SUCCESS, status)
 
-	def test_erase_invalid_key(self):
+	def test_erase_ERROR_INVALID_KEY(self):
 		key = 'key'
 		field = 'field'
 
 		status = self.data_store.erase(key, field)
 		
-		self.assertEqual(DataStoreStatus.INVALID_KEY, status)
+		self.assertEqual(DataStoreStatus.ERROR_INVALID_KEY, status)
 
-	def test_erase_invalid_field(self):
+	def test_erase_ERROR_INVALID_FIELD(self):
 		key = 'key'
 		field = 'field'
 		value = 123
@@ -153,7 +153,7 @@ class TestDataStore(unittest.TestCase):
 		_ = self.data_store.put(key, field, value)
 		status = self.data_store.erase(key, 'invalid field')
 		
-		self.assertEqual(DataStoreStatus.INVALID_FIELD, status)
+		self.assertEqual(DataStoreStatus.ERROR_INVALID_FIELD, status)
 
 	def test_remove(self):
 		key = 'key'
@@ -165,12 +165,12 @@ class TestDataStore(unittest.TestCase):
 		
 		self.assertEqual(DataStoreStatus.SUCCESS, status)
 
-	def test_remove_invalid_key(self):
+	def test_remove_ERROR_INVALID_KEY(self):
 		key = 'key'
 
 		status = self.data_store.remove(key)
 		
-		self.assertEqual(DataStoreStatus.INVALID_KEY, status)
+		self.assertEqual(DataStoreStatus.ERROR_INVALID_KEY, status)
 	
 
 if __name__ == '__main__':
