@@ -1,7 +1,7 @@
 import unittest
 
-from mcf.processor.processor import Processor
-from mcf.processor.processor_status import ProcessorStatus
+from mcf.processor import Processor
+from mcf.processor import ProcessorStatus
 
 class TestDataStore(unittest.TestCase):
 	def setUp(self):

@@ -1,7 +1,7 @@
 import unittest
 
-from mcf.data_store.data_store import DataStore
-from mcf.data_store.data_store_status import DataStoreStatus
+from mcf.data_store import DataStore
+from mcf.data_store import DataStoreStatus
 
 class TestDataStore(unittest.TestCase):
 	def setUp(self):
