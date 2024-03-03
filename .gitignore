@@ -22,3 +22,6 @@ logs/
 
 # Misc
 .DS_Store
+
+# Test Data
+*.mp4
