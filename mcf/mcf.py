@@ -10,5 +10,4 @@ class Api:
     
     def next_result(self):
         return None
-
     

@@ -17,7 +17,7 @@ class TestDataStore(unittest.TestCase):
 
 		status = self.processor.process_frame(None)
 		
-		self.assertEqual(ProcessorStatus.ERROR_NOT_IMPLEMENTED , status)
+		self.assertEqual(ProcessorStatus.SUCCESS , status)
 
 if __name__ == '__main__':
 	unittest.main()
