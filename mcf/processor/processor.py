@@ -1,27 +1,28 @@
 import numpy as np
 from mcf.processor.processor_status import ProcessorStatus
 from mcf.data_store import DataStore, DataStoreStatus
-from mcf.common.time_stamp import TimeStamp
+from mcf.frame import Frame
 from mcf.common.queue import Queue
+from mcf.display import Display
+
 class Processor:
 
-    def __init__(self):
+    def __init__(self, enable_display):
         self.data_store = DataStore()
-        self.keys = Queue()
+        self.queue = Queue()
+        self.enable_display = enable_display
+        self.display = Display()
 
-    def process_frame(self, frame: np.array) -> ProcessorStatus:
-        status = ProcessorStatus.SUCCESS
-
-        time_stamp = TimeStamp.make()
-        self.keys.push(time_stamp)
-
-        if self.data_store.put(time_stamp, frame) != DataStoreStatus.SUCCESS:
-            status = ProcessorStatus.ERROR_INTERNAL
-
+    def process_frame(self, image: np.array) -> ProcessorStatus:
+        frame = Frame(image=image)
+        self.queue.push(frame)
+        status = self._pipeline()
         return status
     
-    def _pipeline(self):
+    def _pipeline(self) -> ProcessorStatus:
         # get current and last -> remove last if it exists
+        frame = self.queue.front()
+        self.queue.pop()
         
         # YOLO: Classification/Segmentation (current)
 
@@ -42,6 +43,8 @@ class Processor:
         # image recovery
 
         # display
+        if self.enable_display:
+            self.display.show(frame.image)
 
         return
     

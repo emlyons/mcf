@@ -11,7 +11,7 @@ def main(input_path):
     frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
     fps = int(video.get(cv.CAP_PROP_FPS))
 
-    mcf = mcf_api()
+    mcf = mcf_api(enable_display=True)
 
     while True:
         success, frame = video.read()
@@ -23,9 +23,9 @@ def main(input_path):
             # call into api
             out_frame = mcf.next_result()
 
-            cv.imshow(f'{width}x{height}, duration: {frames/fps}s  @ {fps}fps', frame)
-            if cv.waitKey(1) & 0xFF == ord("q"):
-                break
+            # cv.imshow(f'{width}x{height}, duration: {frames/fps}s  @ {fps}fps', frame)
+            # if cv.waitKey(1) & 0xFF == ord("q"):
+            #     break
 
         else:
             print('end of video')
