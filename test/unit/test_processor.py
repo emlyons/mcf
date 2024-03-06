@@ -3,7 +3,7 @@ import os
 import cv2 as cv
 from mcf.processor import Processor
 from mcf.processor import ProcessorStatus
-from mcf.frame import Frame
+from mcf.data_types import Frame
 
 class TestProcessor(unittest.TestCase):
 	def setUp(self):

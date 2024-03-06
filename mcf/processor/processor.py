@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 from mcf.processor.processor_status import ProcessorStatus
 from mcf.detection import Detector
-from mcf.frame import Frame
+from mcf.data_types import Frame
 from mcf.common.queue import Queue
 from mcf.display import Display
 
