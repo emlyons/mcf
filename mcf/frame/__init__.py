@@ -1,1 +1,0 @@
-from mcf.frame.frame import Frame
