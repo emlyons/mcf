@@ -15,13 +15,9 @@ class Detector:
             self.device = 'cpu'
         
     def run(self, image):
-        status = DetectionStatus.SUCCESS
-        
-        result = self._run_model(image)
-
-
-
-        return status, result
+        output = self._run_model(image)
+        status, detection_regions = self._get_detection_regions(output)
+        return status, detection_regions
     
     def _run_model(self, image):
         with torch.no_grad():
@@ -30,3 +26,15 @@ class Detector:
             result = result[0]
 
         return result
+    
+    def _get_detection_regions(self, model_output):
+        status = DetectionStatus.SUCCESS
+
+        if model_output.masks is None:
+            status = DetectionStatus.EMPTY_FRAME
+
+        if status == DetectionStatus.SUCCESS:
+            for (box, mask) in zip(model_output.boxes, model_output.masks):
+                break
+
+        return status, None
