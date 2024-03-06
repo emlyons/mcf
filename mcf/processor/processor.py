@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 from mcf.processor.processor_status import ProcessorStatus
-from mcf.instance_segmentation import InstanceSegmentation
+from mcf.detection import Detector
 from mcf.frame import Frame
 from mcf.common.queue import Queue
 from mcf.display import Display
@@ -12,7 +12,7 @@ class Processor:
         self.queue = Queue()
         self.enable_display = enable_display
         self.display = Display()
-        self.instance_segmentation = InstanceSegmentation()
+        self.detector = Detector()
 
     def process_frame(self, image: np.array) -> ProcessorStatus:
         grayscale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -27,7 +27,7 @@ class Processor:
         # get current and last -> remove last if it exists
         status, current_frame, last_frame = self._get_frames()
         
-        self._instance_segmentation(current_frame)
+        self._detect(current_frame)
 
         if (last_frame):# proceed if last exists
 
@@ -64,8 +64,8 @@ class Processor:
             status = ProcessorStatus.ERROR_NO_FRAMES
         return status, current_frame, last_frame
     
-    def _instance_segmentation(self, frame):
-        self.instance_segmentation.run(frame.image)
+    def _detect(self, frame):
+        self.detector.run(frame.image)
         # TODO: parse results to frame object
         # need detection region
         # perhaps mask truncated by bounding box

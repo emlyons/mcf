@@ -1,1 +1,0 @@
-from mcf.instance_segmentation.instance_segmentation import InstanceSegmentation
