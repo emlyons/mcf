@@ -57,10 +57,10 @@ while True:
                     frame[adjusted_mask != 0] = 255
                     # frame = cv.addWeighted(frame, 0.75, adjusted_mask, 0.25, 0)
 
-
         cv.imshow(f'instance segmentation w/ YOLOv8', frame)
         if cv.waitKey(1) & 0xFF == ord("q"):
             break
 
     else:
         break # end of video
+    

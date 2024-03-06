@@ -1,6 +1,8 @@
-from ultralytics import YOLO
 import torch
+import numpy as np
+from ultralytics import YOLO
 from mcf.detection.detection_status import DetectionStatus
+from mcf.data_types import DetectionRegion
 
 class Detector:
 
@@ -21,7 +23,7 @@ class Detector:
     
     def _run_model(self, image):
         with torch.no_grad():
-            output = self.model(image, device=self.device, stream=True, verbose=False)
+            output = self.model.predict(image, device=self.device, stream=True, verbose=False)
             result = [r for r in output]
             result = result[0]
 
@@ -33,8 +35,14 @@ class Detector:
         if model_output.masks is None:
             status = DetectionStatus.EMPTY_FRAME
 
+        detection_regions = []
         if status == DetectionStatus.SUCCESS:
             for (box, mask) in zip(model_output.boxes, model_output.masks):
-                break
+                class_id = int(box.cls.item())
+                ulx,uly,lrx,lry = np.array(box.xyxy.tolist()[0]).astype('int')
+                bounding_box = ((ulx, uly), (lrx, lry))
+                mask = mask.cpu().numpy().data.squeeze()
+                detection_regions.append(DetectionRegion(class_id, None, bounding_box, mask))
 
-        return status, None
+        return status, detection_regions
+    
