@@ -2,7 +2,7 @@ import unittest
 
 from mcf.common.queue import Queue
 
-class TestDataStore(unittest.TestCase):
+class TestQueue(unittest.TestCase):
     def setUp(self):
         self.queue = Queue()
 

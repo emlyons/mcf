@@ -2,7 +2,7 @@ import unittest
 
 from mcf import Api as mcf_api
 
-class TestDataStore(unittest.TestCase):
+class TestAPI(unittest.TestCase):
 	def setUp(self):
 		self.api = mcf_api()
 

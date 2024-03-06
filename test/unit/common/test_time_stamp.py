@@ -2,7 +2,7 @@ import unittest
 
 from mcf.common.time_stamp import TimeStamp
 
-class TestDataStore(unittest.TestCase):
+class TestTimeStamp(unittest.TestCase):
 	def setUp(self):
 		return
 
