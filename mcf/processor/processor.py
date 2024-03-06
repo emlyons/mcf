@@ -8,7 +8,7 @@ from mcf.display import Display
 
 class Processor:
 
-    def __init__(self, enable_display):
+    def __init__(self, enable_display=False):
         self.queue = Queue()
         self.enable_display = enable_display
         self.display = Display()
@@ -22,10 +22,11 @@ class Processor:
         return status
     
     def _pipeline(self) -> ProcessorStatus:
+        status = ProcessorStatus.SUCCESS
+
         # get current and last -> remove last if it exists
-        current_frame, last_frame = self._get_frames()
+        status, current_frame, last_frame = self._get_frames()
         
-        # YOLO: Classification/Segmentation (current)
         self._instance_segmentation(current_frame)
 
         if (last_frame):# proceed if last exists
@@ -47,15 +48,21 @@ class Processor:
             # display
             if self.enable_display:
                 self.display.show(current_frame.image)
-        return
+                
+        return status
 
     def _get_frames(self):
+        status = ProcessorStatus.SUCCESS
         last_frame = None
-        if self.queue.size() == 2:
-            last_frame = self.queue.front()
-            self.queue.pop()
-        current_frame = self.queue.front()
-        return current_frame, last_frame
+        current_frame = None
+        if self.queue.size() > 0:
+            if self.queue.size() > 1:
+                last_frame = self.queue.front()
+                self.queue.pop()
+            current_frame = self.queue.front()
+        else:
+            status = ProcessorStatus.ERROR_NO_FRAMES
+        return status, current_frame, last_frame
     
     def _instance_segmentation(self, frame):
         self.instance_segmentation.run(frame.image)
@@ -63,3 +70,4 @@ class Processor:
         # need detection region
         # perhaps mask truncated by bounding box
         # center of mass could be useful to calculate here
+        # also store probability vector for classifier filtering
