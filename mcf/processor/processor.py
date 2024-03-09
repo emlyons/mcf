@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 from mcf.processor.processor_status import ProcessorStatus
-from mcf.detection import Detector
+from mcf.detection import Detector, DetectionStatus
 from mcf.data_types import Frame
 from mcf.common.queue import Queue
 from mcf.display import Display
@@ -47,7 +47,7 @@ class Processor:
 
             # display
             if self.enable_display:
-                self.display.show(current_frame.image)
+                self.display.show(current_frame)
                 
         return status
 
@@ -65,7 +65,9 @@ class Processor:
         return status, current_frame, last_frame
     
     def _detect(self, frame):
-        self.detector.run(frame.image)
+        status, detection_regions = self.detector.run(frame.image)
+        if status == DetectionStatus.SUCCESS:
+            frame.detection_regions = detection_regions
         # TODO: parse results to frame object
         # need detection region
         # perhaps mask truncated by bounding box

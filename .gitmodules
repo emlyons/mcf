@@ -1,0 +1,3 @@
+[submodule "libs/third-party/yolov7"]
+	path = libs/third-party/yolov7
+	url = git@github.com:RizwanMunawar/yolov7-segmentation.git

@@ -16,12 +16,12 @@ class Detector:
         else:
             self.device = 'cpu'
         
-    def run(self, image):
+    def run(self, image) -> tuple[DetectionStatus, list[DetectionRegion]]:
         output = self._run_model(image)
         status, detection_regions = self._get_detection_regions(output)
         return status, detection_regions
     
-    def _run_model(self, image):
+    def _run_model(self, image) -> torch.tensor:
         with torch.no_grad():
             output = self.model.predict(image, device=self.device, stream=True, verbose=False)
             result = [r for r in output]
@@ -29,7 +29,7 @@ class Detector:
 
         return result
     
-    def _get_detection_regions(self, model_output):
+    def _get_detection_regions(self, model_output) -> tuple[DetectionStatus, list[DetectionRegion]]:
         status = DetectionStatus.SUCCESS
 
         if model_output.masks is None:
@@ -41,8 +41,10 @@ class Detector:
                 class_id = int(box.cls.item())
                 ulx,uly,lrx,lry = np.array(box.xyxy.tolist()[0]).astype('int')
                 bounding_box = ((ulx, uly), (lrx, lry))
-                mask = mask.cpu().numpy().data.squeeze()
-                detection_regions.append(DetectionRegion(class_id, None, bounding_box, mask))
+                mask = mask.cpu().numpy().data.squeeze()[uly:lrx,ulx:uly]
+                class_id = box.cls.item()
+                confidence = box.conf.item()
+                detection_regions.append(DetectionRegion(class_id, confidence, bounding_box, mask))
 
         return status, detection_regions
     
