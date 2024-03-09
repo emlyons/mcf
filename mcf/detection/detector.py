@@ -4,6 +4,7 @@ import cv2 as cv
 from ultralytics import YOLO
 from mcf.detection.detection_status import DetectionStatus
 from mcf.data_types import DetectionRegion
+from mcf.common import get_center_of_mass
 
 class Detector:
 
@@ -44,10 +45,12 @@ class Detector:
                     
                 mask = mask.cpu().numpy().data[0]
                 mask = cv.resize(mask, (image.shape[1], image.shape[0]), cv.INTER_LINEAR)[uly:lry, ulx:lrx]
+                center_of_mass = get_center_of_mass(mask)
 
                 class_id = box.cls.item()
                 confidence = box.conf.item()
-                detection_regions.append(DetectionRegion(class_id, confidence, bounding_box, mask))
+                detection_regions.append(DetectionRegion(class_id, confidence, bounding_box, mask, center_of_mass))
 
         return status, detection_regions
+
     

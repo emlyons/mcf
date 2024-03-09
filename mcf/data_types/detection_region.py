@@ -7,4 +7,5 @@ class DetectionRegion:
     confidence: float # probability of classifier
     bounding_box: tuple[tuple[int,int], tuple[int,int]] # upper-left coordinate, lower-right coordinate
     mask: np.ndarray # mask overlay of bounding box region
+    center_of_mass: tuple[int, int] # pixel center of detected object
     

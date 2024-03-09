@@ -47,7 +47,6 @@ while True:
                     # x1,y1,x2,y2 = np.array(box.xyxy.tolist()[0]).astype('int')
                     # frame[y1:y2, x1:x2,1] = 255
 
-
                     # add mask
                     mask = mask.cpu().numpy().data.squeeze()
                     
