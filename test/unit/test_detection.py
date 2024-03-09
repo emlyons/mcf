@@ -3,6 +3,7 @@ import os
 import cv2 as cv
 import numpy as np
 from mcf.detection import Detector, DetectionStatus
+from mcf.data_types import DetectionRegion
 
 class TestDetection(unittest.TestCase):
     def setUp(self):
@@ -29,7 +30,17 @@ class TestDetection(unittest.TestCase):
         self.assertEqual(DetectionStatus.EMPTY_FRAME, status)
 
     def test_detection_results(self):
-         return
+        status, detection_regions = self.detector.run(self.image)
+        image = self.image.copy()
+        self.assertEqual(1, len(detection_regions))
+
+        top_left, bottom_right = detection_regions[0].bounding_box
+        self.assertEqual((505,336), top_left)
+        self.assertEqual((677,442), bottom_right)
+
+        mask = detection_regions[0].mask
+        expected_mask_size = (677-505)*(442-336)
+        self.assertEqual(expected_mask_size, np.prod(mask.shape))
 
 if __name__ == '__main__':
 	unittest.main()

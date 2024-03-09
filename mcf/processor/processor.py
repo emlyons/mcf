@@ -47,7 +47,7 @@ class Processor:
 
             # display
             if self.enable_display:
-                self.display.show(current_frame, bbox=True)
+                self.display.show(current_frame, bbox=True, mask=True)
                 
         return status
 

@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import cv2 as cv
 from ultralytics import YOLO
 from mcf.detection.detection_status import DetectionStatus
 from mcf.data_types import DetectionRegion
@@ -18,7 +19,7 @@ class Detector:
         
     def run(self, image) -> tuple[DetectionStatus, list[DetectionRegion]]:
         output = self._run_model(image)
-        status, detection_regions = self._get_detection_regions(output)
+        status, detection_regions = self._get_detection_regions(output, image)
         return status, detection_regions
     
     def _run_model(self, image) -> torch.tensor:
@@ -26,10 +27,9 @@ class Detector:
             output = self.model.predict(image, device=self.device, stream=True, verbose=False)
             result = [r for r in output]
             result = result[0]
-
         return result
     
-    def _get_detection_regions(self, model_output) -> tuple[DetectionStatus, list[DetectionRegion]]:
+    def _get_detection_regions(self, model_output: torch.tensor, image: np.array) -> tuple[DetectionStatus, list[DetectionRegion]]:
         status = DetectionStatus.SUCCESS
 
         if model_output.masks is None:
@@ -41,7 +41,10 @@ class Detector:
                 class_id = int(box.cls.item())
                 ulx,uly,lrx,lry = np.array(box.xyxy.tolist()[0]).astype('int')
                 bounding_box = ((ulx, uly), (lrx, lry))
-                mask = mask.cpu().numpy().data.squeeze()[uly:lrx,ulx:uly]
+                    
+                mask = mask.cpu().numpy().data[0]
+                mask = cv.resize(mask, (image.shape[1], image.shape[0]), cv.INTER_LINEAR)[uly:lry, ulx:lrx]
+
                 class_id = box.cls.item()
                 confidence = box.conf.item()
                 detection_regions.append(DetectionRegion(class_id, confidence, bounding_box, mask))
