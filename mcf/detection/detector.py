@@ -8,14 +8,14 @@ from mcf.data_types import DetectionRegion
 class Detector:
 
     def __init__(self):
-        self.model = YOLO('yolov8n-seg.pt')
+        self._model = YOLO('yolov8n-seg.pt')
 
         if torch.cuda.is_available():
-            self.device = 'cuda'
+            self._device = 'cuda'
         # elif torch.backends.mps.is_available():
-        #     self.device = 'mps'
+        #     self._device = 'mps'
         else:
-            self.device = 'cpu'
+            self._device = 'cpu'
         
     def run(self, image) -> tuple[DetectionStatus, list[DetectionRegion]]:
         output = self._run_model(image)
@@ -24,7 +24,7 @@ class Detector:
     
     def _run_model(self, image) -> torch.tensor:
         with torch.no_grad():
-            output = self.model.predict(image, device=self.device, stream=True, verbose=False)
+            output = self._model.predict(image, device=self._device, stream=True, verbose=False)
             result = [r for r in output]
             result = result[0]
         return result
