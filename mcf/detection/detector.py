@@ -46,7 +46,6 @@ class Detector:
                 mask = mask.cpu().numpy().data[0]
                 mask = cv.resize(mask, (image.shape[1], image.shape[0]), cv.INTER_LINEAR)[uly:lry, ulx:lrx]
                 center_of_mass = get_center_of_mass(mask)
-
                 mask = format_mask(mask, bounding_box)
 
                 class_id = box.cls.item()

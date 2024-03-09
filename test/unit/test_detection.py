@@ -29,18 +29,27 @@ class TestDetection(unittest.TestCase):
         status, _ = self.detector.run(self.blank_image)
         self.assertEqual(DetectionStatus.EMPTY_FRAME, status)
 
-    def test_detection_results(self):
+    def test_REGRESSION_detection_results(self):
         status, detection_regions = self.detector.run(self.image)
-        image = self.image.copy()
+        self.assertEqual(status, DetectionStatus.SUCCESS)
         self.assertEqual(1, len(detection_regions))
 
+        # bounding box results
         top_left, bottom_right = detection_regions[0].bounding_box
         self.assertEqual((505,336), top_left)
         self.assertEqual((677,442), bottom_right)
 
+        # mask results
         mask = detection_regions[0].mask
         expected_mask_size = (677-505)*(442-336)*2 # Width x Height x 2-Coordinates
         self.assertEqual(expected_mask_size, np.prod(mask.shape))
+        self.assertTrue((mask[0,0,:] == np.array([-1, -1])).all())
+        self.assertTrue((mask[60,60,:] == np.array([396, 565])).all())
+
+        # center of mass results
+        center_of_mass = detection_regions[0].center_of_mass
+        self.assertEqual((49, 86), center_of_mass)
+        
 
 if __name__ == '__main__':
 	unittest.main()
