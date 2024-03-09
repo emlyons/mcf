@@ -39,7 +39,7 @@ class TestDetection(unittest.TestCase):
         self.assertEqual((677,442), bottom_right)
 
         mask = detection_regions[0].mask
-        expected_mask_size = (677-505)*(442-336)
+        expected_mask_size = (677-505)*(442-336)*2 # Width x Height x 2-Coordinates
         self.assertEqual(expected_mask_size, np.prod(mask.shape))
 
 if __name__ == '__main__':
