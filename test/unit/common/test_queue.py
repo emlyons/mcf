@@ -1,6 +1,6 @@
 import unittest
 
-from mcf.common.queue import Queue
+from mcf.common import Queue
 
 class TestQueue(unittest.TestCase):
     def setUp(self):

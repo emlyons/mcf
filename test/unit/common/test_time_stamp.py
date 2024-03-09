@@ -1,6 +1,6 @@
 import unittest
 
-from mcf.common.time_stamp import TimeStamp
+from mcf.common import TimeStamp
 
 class TestTimeStamp(unittest.TestCase):
 	def setUp(self):
