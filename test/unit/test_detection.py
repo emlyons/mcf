@@ -41,10 +41,10 @@ class TestDetection(unittest.TestCase):
 
         # mask results
         mask = detection_regions[0].mask
-        expected_mask_size = (677-505)*(442-336)*2 # Width x Height x 2-Coordinates
+        expected_mask_size = (677-505)*(442-336) # Width x Height
         self.assertEqual(expected_mask_size, np.prod(mask.shape))
-        self.assertTrue((mask[0,0,:] == np.array([-1, -1])).all())
-        self.assertTrue((mask[60,60,:] == np.array([396, 565])).all())
+        self.assertTrue(mask[0,0] == 0)
+        self.assertTrue(mask[60,60] == 1)
 
         # center of mass results
         center_of_mass = detection_regions[0].center_of_mass
