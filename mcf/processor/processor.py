@@ -51,7 +51,7 @@ class Processor:
 
             # display
             if status == ProcessorStatus.SUCCESS and self.enable_display:
-                self.display.show(current_frame, bbox=True, mask=True)
+                self.display.show(current_frame, bbox=True, mask=False, velocity=True)
                 
         return status
 
