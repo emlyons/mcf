@@ -2,8 +2,9 @@ import numpy as np
 import cv2 as cv
 from mcf.processor.processor_status import ProcessorStatus
 from mcf.detection import Detector, DetectionStatus
+from mcf.motion_measurement import MotionMeasurement, MotionMeasurementStatus
 from mcf.data_types import Frame
-from mcf.common.queue import Queue
+from mcf.common import Queue
 from mcf.display import Display
 
 class Processor:
@@ -13,6 +14,7 @@ class Processor:
         self.enable_display = enable_display
         self.display = Display()
         self.detector = Detector()
+        self.motion_measurement = MotionMeasurement()
 
     def process_frame(self, image: np.array) -> ProcessorStatus:
         grayscale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -27,13 +29,15 @@ class Processor:
         # get current and last -> remove last if it exists
         status, current_frame, last_frame = self._get_frames()
         
-        self._detect(current_frame)
+        status = self._detect(current_frame)
 
         if (last_frame):# proceed if last exists
 
-            # classifier filtering w/ recursive bayes (current, last)
+            # classifier filtering w/ recursive bayes (current, last) ?? MAYBE but probably needs to be done after kalman because that is our target matching ??
 
             # motion measurement w/ optical flow (current, last)
+            if status == ProcessorStatus.SUCCESS:
+                status = self._motion_measurement(current_frame, last_frame)
         
             # motion prediction model (current, last)
             
@@ -46,12 +50,12 @@ class Processor:
             # image recovery
 
             # display
-            if self.enable_display:
+            if status == ProcessorStatus.SUCCESS and self.enable_display:
                 self.display.show(current_frame, bbox=True, mask=True)
                 
         return status
 
-    def _get_frames(self):
+    def _get_frames(self) -> tuple[ProcessorStatus, Frame, Frame]:
         status = ProcessorStatus.SUCCESS
         last_frame = None
         current_frame = None
@@ -64,12 +68,20 @@ class Processor:
             status = ProcessorStatus.ERROR_NO_FRAMES
         return status, current_frame, last_frame
     
-    def _detect(self, frame):
+    def _detect(self, frame: Frame) -> ProcessorStatus:
         status, detection_regions = self.detector.run(frame.image)
         if status == DetectionStatus.SUCCESS:
             frame.detection_regions = detection_regions
-        # TODO: parse results to frame object
-        # need detection region
-        # perhaps mask truncated by bounding box
-        # center of mass could be useful to calculate here
-        # also store probability vector for classifier filtering
+            status = ProcessorStatus.SUCCESS
+        else:
+            status = ProcessorStatus.ERROR_INTERNAL
+        return status
+ 
+    def _motion_measurement(self, frame: Frame, last_frame: Frame) -> ProcessorStatus:
+        status = self.motion_measurement.run(frame.grayscale, last_frame.grayscale, frame.detection_regions)
+        if status == MotionMeasurementStatus.SUCCESS:
+            status = ProcessorStatus.SUCCESS
+        else:
+            status = ProcessorStatus.ERROR_INTERNAL
+        return status
+
