@@ -1,7 +1,7 @@
 import numpy as np
 
 """ Calculates the center of mass ignoring any zero elements
-    Center of mass is given in x,y coordinates relative to the array. """
+    Center of mass is given in y,x coordinates relative to the array. """
 def get_center_of_mass(array: np.array) -> tuple[int, int]:
     x_sum = 0
     x_count = 0
