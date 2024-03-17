@@ -30,7 +30,7 @@ class MotionMeasurement:
                 status, motion_measurements = self._optical_flow(end_points, image_gray, image_gray_last)
 
             if status == MotionMeasurementStatus.SUCCESS:
-                detection_region.velocity_measurement = self._refine_measurement(motion_measurements)
+                detection_region.velocities = [self._refine_measurement(motion_measurements)]
 
         return status
             

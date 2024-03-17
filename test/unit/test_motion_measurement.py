@@ -32,7 +32,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -48,7 +48,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -65,7 +65,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -82,7 +82,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -99,7 +99,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -115,7 +115,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -131,7 +131,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
 
@@ -148,7 +148,7 @@ class TestMotionMeasurement(unittest.TestCase):
                                            center_of_mass=(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
-        observed_velocity = detection_region.velocity_measurement
+        observed_velocity = detection_region.velocities[0]
         
         self.assertEqual(expected_velocity, observed_velocity)
         
