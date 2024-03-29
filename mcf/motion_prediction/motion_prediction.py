@@ -24,13 +24,13 @@ def make_filter(size) -> list[float]:
     return filter_coeffs
 
 # returns the (y, x) translation factors from the prediction model
-def prediction_model(velocities, filter_coeffs) -> Point:
+def prediction_model(velocities: list[Point], filter_coeffs: np.array) -> Point:
     Vy,Vx = 0,0
     
     N = min(len(velocities), len(filter_coeffs))
     for idx in range(N):
-        Vx += filter_coeffs[idx] * velocities[idx][0]
-        Vy += filter_coeffs[idx] * velocities[idx][1]
+        Vx += filter_coeffs[idx] * velocities[idx].x
+        Vy += filter_coeffs[idx] * velocities[idx].y
         
     Vx = int(np.round(Vx))
     Vy = int(np.round(Vy))
@@ -43,7 +43,7 @@ def predict_center_of_mass(center_of_mass: Point, translation_vector: Point) -> 
     return predicted_center_of_mass
 
 def predict_bounding_box(bounding_box: BoundingBox, translation_vector) -> BoundingBox:
-    
+
     predicted_bounding_box = BoundingBox(Point(bounding_box.upper_left.x + translation_vector.x,
                                                bounding_box.upper_left.y + translation_vector.y),
                                          Point(bounding_box.lower_right.x + translation_vector.x,
