@@ -9,10 +9,11 @@ def motion_prediction(detection_regions: list[DetectionRegion]) -> MotionPredict
     status = MotionPredictionStatus.SUCCESS
     for detection_region in detection_regions:
         velocities = detection_region.velocities
-        filter_coeffs = make_filter(min(len(velocities), 5))
-        translation_vector = prediction_model(velocities, filter_coeffs)
-        detection_region.next_center_of_mass = predict_center_of_mass(detection_region.center_of_mass, translation_vector)
-        detection_region.next_bounding_box = predict_bounding_box(detection_region.bounding_box, translation_vector)
+        if velocities is not None:
+            filter_coeffs = make_filter(min(len(velocities), 5))
+            translation_vector = prediction_model(velocities, filter_coeffs)
+            detection_region.next_center_of_mass = predict_center_of_mass(detection_region.center_of_mass, translation_vector)
+            detection_region.next_bounding_box = predict_bounding_box(detection_region.bounding_box, translation_vector)
     return status
 
 def make_filter(size):
