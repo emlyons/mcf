@@ -29,7 +29,7 @@ def add_mask(image: np.array, detection_region: DetectionRegion):
     image[top_left[1]:bottom_right[1],top_left[0]:bottom_right[0], 1] = box
 
 def add_velocity(image: np.array, detection_region: DetectionRegion):
-    y_velocity, x_velocity = detection_region.velocities[0]
+    x_velocity, y_velocity = detection_region.velocities[0]
     (xl,yl),_ = detection_region.bounding_box
     start_point = (xl + detection_region.center_of_mass[1], yl + detection_region.center_of_mass[0]) # xy for opencv
     end_point = start_point[0] + 20*x_velocity, start_point[1] + 20*y_velocity # scale for visual effect - xy for opencv

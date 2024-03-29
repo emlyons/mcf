@@ -16,7 +16,7 @@ class TestMotionMeasurement(unittest.TestCase):
         return
     
     def shift_image(self, image: np.array, yx_shift: tuple[int, int]):
-        y_shift, x_shift = yx_shift
+        x_shift, y_shift = yx_shift
         translation_matrix = np.float32([[1, 0, x_shift], [0, 1, y_shift]])
         return cv.warpAffine(image, translation_matrix, (image.shape[1], image.shape[0]))
     

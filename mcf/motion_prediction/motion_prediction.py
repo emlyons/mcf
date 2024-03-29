@@ -29,24 +29,24 @@ def prediction_model(velocities, filter_coeffs):
     
     N = min(len(velocities), len(filter_coeffs))
     for idx in range(N):
-        Vy += filter_coeffs[idx] * velocities[idx][0]
-        Vx += filter_coeffs[idx] * velocities[idx][1]
+        Vx += filter_coeffs[idx] * velocities[idx][0]
+        Vy += filter_coeffs[idx] * velocities[idx][1]
         
-    Vy = int(np.round(Vy))
     Vx = int(np.round(Vx))
-    dy,dx = Vy,Vx
-    return dy,dx
+    Vy = int(np.round(Vy))
+    dx,dy = Vx,Vy
+    return dx,dy
 
 def predict_center_of_mass(center_of_mass, translation_vector):
-    dy, dx = translation_vector
-    predicted_center_of_mass = (center_of_mass[0] + dy,
-                                center_of_mass[1] + dx)
+    dx, dy = translation_vector
+    predicted_center_of_mass = (center_of_mass[0] + dx,
+                                center_of_mass[1] + dy)
     return predicted_center_of_mass
 
 def predict_bounding_box(bounding_box, translation_vector):
-    dy, dx = translation_vector
-    predicted_bounding_box = ((bounding_box[0][0] + dx, 
+    dx, dy = translation_vector
+    predicted_bounding_box = ((bounding_box[0][0] + dx,
                                bounding_box[0][1] + dy),
-                              (bounding_box[1][0] + dx, 
+                              (bounding_box[1][0] + dx,
                                bounding_box[1][1] + dy))
     return predicted_bounding_box

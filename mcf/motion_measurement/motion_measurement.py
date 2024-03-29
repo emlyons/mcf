@@ -30,7 +30,7 @@ class MotionMeasurement:
                 status, motion_measurements = self._optical_flow(end_points, image_gray, image_gray_last)
 
             if status == MotionMeasurementStatus.SUCCESS:
-                detection_region.velocities = [self._refine_measurement(motion_measurements)]
+                detection_region.velocities = [self._refine_measurement(motion_measurements)] + detection_region.velocities if detection_region.velocities else [self._refine_measurement(motion_measurements)]
 
         return status
             
@@ -70,5 +70,5 @@ class MotionMeasurement:
         motion_measurement = np.mean(motion_points[:,:,1] - motion_points[:,:,0],axis=0)
         motion_x = int(np.round(motion_measurement[0]))
         motion_y = int(np.round(motion_measurement[1]))
-        return (motion_y, motion_x)
+        return (motion_x, motion_y)
     
