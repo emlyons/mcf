@@ -1,14 +1,17 @@
 import numpy as np
+from mcf.data_types.point import Point
+from mcf.data_types.bounding_box import BoundingBox
 from dataclasses import dataclass
 
 @dataclass
 class DetectionRegion:
     classification: int # most probable classifier
     confidence: float # probability of classifier
-    bounding_box: tuple[tuple[int,int], tuple[int,int]] # upper-left (x,y) coordinate, lower-right (x,y) coordinate
     mask: np.ndarray # mask overlay of bounding box region
-    center_of_mass: tuple[int, int] # pixel center of detected object (y, x)
-    velocities: list[tuple[int, int]] = None # the last N velocities as, pixels / (seconds per frame) (y, x), index0 is current velocity mesaure for this frame
-    next_bounding_box: tuple[tuple[int,int], tuple[int,int]] = None # predicted next upper-left (x,y) coordinate, lower-right (x,y) coordinate
-    next_center_of_mass: tuple[int, int] = None # predicted next pixel center of detected object (y, x)
-    
+    bounding_box: BoundingBox # measured current bounding box
+    center_of_mass: Point # measured current center of mass
+    next_bounding_box: BoundingBox = None # predicted bounding box in next frame
+    next_center_of_mass: Point = None # predicted center of mass in next frame
+    last_bounding_box: BoundingBox = None # prediction for current bounding box
+    last_center_of_mass: Point = None # prediction for current center of mass
+    velocities: list[Point] = None # the last N velocities as, pixels / (seconds per frame)

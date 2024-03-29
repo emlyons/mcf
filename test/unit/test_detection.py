@@ -3,7 +3,7 @@ import os
 import cv2 as cv
 import numpy as np
 from mcf.detection import Detector, DetectionStatus
-from mcf.data_types import DetectionRegion
+from mcf.data_types import DetectionRegion, BoundingBox, Point
 
 class TestDetection(unittest.TestCase):
     def setUp(self):
@@ -35,9 +35,9 @@ class TestDetection(unittest.TestCase):
         self.assertEqual(1, len(detection_regions))
 
         # bounding box results
-        top_left, bottom_right = detection_regions[0].bounding_box
-        self.assertEqual((505,336), top_left)
-        self.assertEqual((677,442), bottom_right)
+        bbox = detection_regions[0].bounding_box
+        self.assertEqual(Point(505, 336), bbox.upper_left)
+        self.assertEqual(Point(677, 442), bbox.lower_right)
 
         # mask results
         mask = detection_regions[0].mask
@@ -48,7 +48,7 @@ class TestDetection(unittest.TestCase):
 
         # center of mass results
         center_of_mass = detection_regions[0].center_of_mass
-        self.assertEqual((49, 86), center_of_mass)
+        self.assertEqual(Point(86, 49), center_of_mass)
         
 
 if __name__ == '__main__':

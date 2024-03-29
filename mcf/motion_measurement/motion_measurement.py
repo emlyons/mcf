@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 from mcf.motion_measurement.motion_measurement_status import MotionMeasurementStatus
-from mcf.data_types import Frame, DetectionRegion
+from mcf.data_types import Frame, DetectionRegion, BoundingBox, Point
 
 class MotionMeasurement:
 
@@ -35,11 +35,10 @@ class MotionMeasurement:
         return status
             
     
-    def _get_features(self, gray: np.array, mask: np.array , bounding_box):
+    def _get_features(self, gray: np.array, mask: np.array, bounding_box: BoundingBox):
         status = MotionMeasurementStatus.SUCCESS
-        (xl,yl),(xh,yh) = bounding_box
         feature_mask = np.zeros(gray.shape, dtype=np.uint8)
-        feature_mask[yl:yh,xl:xh] = mask
+        feature_mask[bounding_box.upper_left.y:bounding_box.lower_right.y, bounding_box.upper_left.x:bounding_box.lower_right.x] = mask
         feature_points = cv.goodFeaturesToTrack(gray, mask=feature_mask, **self.feature_params)
         if feature_points.size == 0:
             status = MotionMeasurementStatus.NO_FEATURES
@@ -70,5 +69,5 @@ class MotionMeasurement:
         motion_measurement = np.mean(motion_points[:,:,1] - motion_points[:,:,0],axis=0)
         motion_x = int(np.round(motion_measurement[0]))
         motion_y = int(np.round(motion_measurement[1]))
-        return (motion_x, motion_y)
+        return Point(motion_x, motion_y)
     
