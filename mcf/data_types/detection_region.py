@@ -12,6 +12,6 @@ class DetectionRegion:
     center_of_mass: Point # measured current center of mass
     next_bounding_box: BoundingBox = None # predicted bounding box in next frame
     next_center_of_mass: Point = None # predicted center of mass in next frame
-    last_bounding_box: BoundingBox = None # prediction for current bounding box
-    last_center_of_mass: Point = None # prediction for current center of mass
+    predicted_bounding_box: BoundingBox = None # prediction for current bounding box
+    predicted_center_of_mass: Point = None # prediction for current center of mass
     velocities: list[Point] = None # the last N velocities as, pixels / (seconds per frame)
