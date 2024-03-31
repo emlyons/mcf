@@ -6,7 +6,7 @@ GREEN = (0,255,0)
 RED = (0,0,255)
 PURPLE = (200, 0, 256)
 
-def add_bounding_box(image: np.array, detection_region: DetectionRegion):
+def add_bounding_box(image: np.array, detection_region: DetectionRegion, bbox_color=GREEN, text_color=PURPLE):
     bbox: BoundingBox = detection_region.bounding_box
     confidence = detection_region.confidence
 
@@ -16,10 +16,10 @@ def add_bounding_box(image: np.array, detection_region: DetectionRegion):
     font_scale = 2
     font_thickness = 2
     text_size = cv.getTextSize(text, font, font_scale, font_thickness)[0]
-    cv.putText(image, text, (bbox.upper_left.x, bbox.upper_left.y), font, font_scale, PURPLE, font_thickness)
+    cv.putText(image, text, (bbox.upper_left.x, bbox.upper_left.y), font, font_scale, text_color, font_thickness)
 
     # add bounding box
-    cv.rectangle(image, (bbox.upper_left.x, bbox.upper_left.y), (bbox.lower_right.x, bbox.lower_right.y), GREEN, 5)
+    cv.rectangle(image, (bbox.upper_left.x, bbox.upper_left.y), (bbox.lower_right.x, bbox.lower_right.y), bbox_color, 5)
 
 def add_mask(image: np.array, detection_region: DetectionRegion):
     bbox = detection_region.bounding_box
