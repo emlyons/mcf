@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 from mcf.common import format_mask
+from mcf.data_types import BoundingBox, Point
 
 class TestFormatMask(unittest.TestCase):
     def setUp(self):
@@ -12,7 +13,7 @@ class TestFormatMask(unittest.TestCase):
 
     def test_basic_square(self):
         N = 10
-        bounding_box = ((0,0),(N,N))
+        bounding_box = BoundingBox(Point(0,0),Point(N,N))
         mask = np.ones((N,N))
         formatted_mask = format_mask(mask, bounding_box)
         for y in range(0, N):
@@ -23,7 +24,7 @@ class TestFormatMask(unittest.TestCase):
 
     def test_basic_square_mask_with_zeros(self):
         N = 33
-        bounding_box = ((0,0),(N,N))
+        bounding_box = BoundingBox(Point(0,0),Point(N,N))
         mask = np.ones((N,N))
         for y in range(0, N):
             for x in range(0, N):
@@ -42,7 +43,7 @@ class TestFormatMask(unittest.TestCase):
 
     def test_basic_square_not_at_origin(self):
         N = 11
-        bounding_box = ((2*N,2*N),(2*N+N,2*N+N))
+        bounding_box = BoundingBox(Point(2*N,2*N),Point(2*N+N,2*N+N))
         mask = np.ones((N,N))
         formatted_mask = format_mask(mask, bounding_box)
         for y in range(0, N):
@@ -55,7 +56,7 @@ class TestFormatMask(unittest.TestCase):
 
     def test_basic_square_not_at_origin_mask_with_zeros(self):
         N = 23
-        bounding_box = ((2*N,2*N),(2*N+N,2*N+N))
+        bounding_box = BoundingBox(Point(2*N,2*N),Point(2*N+N,2*N+N))
         mask = np.ones((N,N))
         for y in range(0, N):
             for x in range(0, N):

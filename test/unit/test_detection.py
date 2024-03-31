@@ -29,6 +29,12 @@ class TestDetection(unittest.TestCase):
         status, _ = self.detector.run(self.blank_image)
         self.assertEqual(DetectionStatus.EMPTY_FRAME, status)
 
+    def test_bounding_box_area(self):
+        status, detection_regions = self.detector.run(self.image)
+        self.assertEqual(status, DetectionStatus.SUCCESS)
+        for detection in detection_regions:
+            self.assertEqual(detection.bounding_box.area(), np.prod(detection.mask.shape))
+
     def test_REGRESSION_detection_results(self):
         status, detection_regions = self.detector.run(self.image)
         self.assertEqual(status, DetectionStatus.SUCCESS)

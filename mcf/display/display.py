@@ -39,15 +39,15 @@ class Display:
 
     @classmethod
     def show(cls, frame: Frame, bbox=False, mask=False, velocity=False):
-        
+        display_image = frame.image.copy()
         for detection_region in frame.detection_regions:
             if bbox:
-                add_bounding_box(frame.image, detection_region)
+                add_bounding_box(display_image, detection_region)
             if mask:
-                add_mask(frame.image, detection_region)
+                add_mask(display_image, detection_region)
             if velocity:
-                add_velocity(frame.image, detection_region)
+                add_velocity(display_image, detection_region)
 
-        cv.imshow("", frame.image)
+        cv.imshow("", display_image)
         cv.waitKey(1)
 
