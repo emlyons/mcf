@@ -25,3 +25,4 @@ logs/
 
 # Test Data
 *.mp4
+*.pickle
