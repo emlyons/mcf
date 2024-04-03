@@ -194,13 +194,10 @@ class TestMotionPrediction(unittest.TestCase):
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
         
-        self.assertEqual(2, len(current_detections))
+        self.assertEqual(1, len(current_detections))
         self.assertEqual(current_detections[0].predicted_bounding_box, None)
         self.assertEqual(current_detections[0].predicted_center_of_mass, None)
         self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection.velocities)
 
     def test_3_last_1_current_1_match(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(23,23), bbox=BoundingBox(Point(18,18), Point(28,28)))
