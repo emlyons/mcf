@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 from mcf.data_types import DetectionRegion, BoundingBox, Point, Match
-from mcf.common import euclidean_distance, trim_zero_borders, cross_correlate_2D
+from mcf.common import euclidean_distance, trim_zero_borders, cross_correlate_2D, intersection_over_union
 from mcf.region_matching.region_matching_status import RegionMatchingStatus
 
 def get_match(last: DetectionRegion, last_image: np.array, current: DetectionRegion, current_image: np.array) -> Match:
@@ -29,14 +29,6 @@ def get_match(last: DetectionRegion, last_image: np.array, current: DetectionReg
 def cost_function(match: Match):
     match.cost = match.distance + match.distance*(1-match.iou) + match.distance*(1-match.correlation)
     return match.cost
-
-def intersection_over_union(b1: BoundingBox, b2: BoundingBox) -> float:
-    intersection_area = max(0, min(b1.lower_right.x, b2.lower_right.x) \
-                        - max(b1.upper_left.x, b2.upper_left.x)) * max(0, min(b1.lower_right.y, b2.lower_right.y) \
-                        - max(b1.upper_left.y, b2.upper_left.y))
-    union_area = b1.area() + b2.area() - intersection_area
-    iou = intersection_area / union_area
-    return iou
 
 def correlate_mask_regions(last_mask: np.array, last_bbox: BoundingBox, last_image: np.array, current_mask: np.array, current_bbox: BoundingBox, current_image: np.array) -> float:
     # extract patches containing masked regions from images
