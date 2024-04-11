@@ -33,7 +33,7 @@ class TestDetection(unittest.TestCase):
         status, detection_regions = self.detector.run(self.image)
         self.assertEqual(status, DetectionStatus.SUCCESS)
         for detection in detection_regions:
-            self.assertEqual(detection.bounding_box.area(), np.prod(detection.mask.shape))
+            self.assertEqual(detection.measured_bounding_box.area(), np.prod(detection.mask.shape))
 
     def test_REGRESSION_detection_results(self):
         status, detection_regions = self.detector.run(self.image)
@@ -41,7 +41,7 @@ class TestDetection(unittest.TestCase):
         self.assertEqual(1, len(detection_regions))
 
         # bounding box results
-        bbox = detection_regions[0].bounding_box
+        bbox = detection_regions[0].measured_bounding_box
         self.assertEqual(Point(505, 336), bbox.upper_left)
         self.assertEqual(Point(677, 442), bbox.lower_right)
 
@@ -53,7 +53,7 @@ class TestDetection(unittest.TestCase):
         self.assertTrue(mask[60,60] == 1)
 
         # center of mass results
-        center_of_mass = detection_regions[0].center_of_mass
+        center_of_mass = detection_regions[0].measured_center_of_mass
         self.assertEqual(Point(86, 49), center_of_mass)
         
 

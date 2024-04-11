@@ -70,7 +70,6 @@ def match_current(last_detection_regions: list[DetectionRegion], last_image: np.
     status = RegionMatchingStatus.SUCCESS
     current = current_detection_regions[current_index]
     
-
     for last_index in last_available:
         if status != RegionMatchingStatus.SUCCESS:
             break

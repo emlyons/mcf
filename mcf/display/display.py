@@ -7,7 +7,7 @@ RED = (0,0,255)
 PURPLE = (200, 0, 256)
 
 def add_bounding_box(image: np.array, detection_region: DetectionRegion, bbox_color=GREEN, text_color=PURPLE):
-    bbox: BoundingBox = detection_region.bounding_box
+    bbox: BoundingBox = detection_region.measured_bounding_box
     confidence = detection_region.confidence
 
     # write confidence value on bounding box
@@ -22,7 +22,7 @@ def add_bounding_box(image: np.array, detection_region: DetectionRegion, bbox_co
     cv.rectangle(image, (bbox.upper_left.x, bbox.upper_left.y), (bbox.lower_right.x, bbox.lower_right.y), bbox_color, 5)
 
 def add_mask(image: np.array, detection_region: DetectionRegion):
-    bbox = detection_region.bounding_box
+    bbox = detection_region.measured_bounding_box
     mask = detection_region.mask
     box = image[bbox.upper_left.y:bbox.lower_right.y, bbox.upper_left.x:bbox.lower_right.x, 1]
     box[mask!=0] = 255
@@ -30,8 +30,8 @@ def add_mask(image: np.array, detection_region: DetectionRegion):
 
 def add_velocity(image: np.array, detection_region: DetectionRegion):
     velocity: Point = detection_region.velocities[0]
-    upper_left = detection_region.bounding_box.upper_left
-    start_point = (upper_left.x + detection_region.center_of_mass.x, upper_left.y + detection_region.center_of_mass.y) # xy for opencv
+    upper_left = detection_region.measured_bounding_box.upper_left
+    start_point = (upper_left.x + detection_region.measured_center_of_mass.x, upper_left.y + detection_region.measure_center_of_mass.y) # xy for opencv
     end_point = start_point[0] + 20*velocity.x, start_point[1] + 20*velocity.y # scale for visual effect - xy for opencv
     image = cv.arrowedLine(image, start_point, end_point, (25,255,245), 10)
 

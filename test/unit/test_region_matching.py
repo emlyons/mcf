@@ -18,8 +18,8 @@ class TestMotionPrediction(unittest.TestCase):
         detection = DetectionRegion(classification=1,
                                     confidence=1.0,
                                     mask=gaussian_2d(mask_Y, mask_X) + noise(mask_Y, mask_X),
-                                    bounding_box=bbox,
-                                    center_of_mass=com)
+                                    measured_bounding_box=bbox,
+                                    measured_center_of_mass=com)
         return detection, image
         
     def make_last_test_detection_region(self, com: Point, bbox: BoundingBox) -> DetectionRegion:
@@ -28,8 +28,8 @@ class TestMotionPrediction(unittest.TestCase):
         detection = DetectionRegion(classification=1,
                                     confidence=1.0,
                                     mask=gaussian_2d(mask_Y, mask_X) + noise(mask_Y, mask_X),
-                                    bounding_box=bbox,
-                                    center_of_mass=Point(1,1),
+                                    measured_bounding_box=bbox,
+                                    measured_center_of_mass=Point(1,1),
                                     next_bounding_box=bbox,
                                     next_center_of_mass=com,
                                     velocities=[Point(2,2), Point(1,1), Point(0,0)])
@@ -37,7 +37,7 @@ class TestMotionPrediction(unittest.TestCase):
 
     def test_one_match(self):
         current_detection, current_image = self.make_current_test_detection_region()
-        last_detection, last_image = self.make_last_test_detection_region(current_detection.center_of_mass, current_detection.bounding_box)
+        last_detection, last_image = self.make_last_test_detection_region(current_detection.measured_center_of_mass, current_detection.measured_bounding_box)
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
         
@@ -47,8 +47,8 @@ class TestMotionPrediction(unittest.TestCase):
 
     def test_competing_matches_decision_by_bounding_box(self):
         current_detection, current_image = self.make_current_test_detection_region()
-        last_detection_better, last_image = self.make_last_test_detection_region(current_detection.center_of_mass, current_detection.bounding_box)
-        last_detection_worse, _ = self.make_last_test_detection_region(current_detection.center_of_mass, BoundingBox(Point(10,11),Point(12,12)))
+        last_detection_better, last_image = self.make_last_test_detection_region(current_detection.measured_center_of_mass, current_detection.measured_bounding_box)
+        last_detection_worse, _ = self.make_last_test_detection_region(current_detection.measured_center_of_mass, BoundingBox(Point(10,11),Point(12,12)))
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection_worse, last_detection_better], last_image, [current_detection], current_image))
         
@@ -58,8 +58,8 @@ class TestMotionPrediction(unittest.TestCase):
 
     def test_competing_matches_decision_by_center_of_mass(self):
         current_detection, current_image = self.make_current_test_detection_region()
-        last_detection_better, last_image = self.make_last_test_detection_region(current_detection.center_of_mass, current_detection.bounding_box)
-        last_detection_worse, _ = self.make_last_test_detection_region(Point(10,11), current_detection.bounding_box)
+        last_detection_better, last_image = self.make_last_test_detection_region(current_detection.measured_center_of_mass, current_detection.measured_bounding_box)
+        last_detection_worse, _ = self.make_last_test_detection_region(Point(10,11), current_detection.measured_bounding_box)
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection_worse, last_detection_better], last_image, [current_detection], current_image))
         
@@ -109,6 +109,18 @@ class TestMotionPrediction(unittest.TestCase):
     def test_unsuitable_match_distance(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
         last_detection, last_image = self.make_last_test_detection_region(com=Point(20,20), bbox=BoundingBox(Point(19,19), Point(21,21)))
+
+        self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
+
+        self.assertEqual(current_detection.predicted_bounding_box, None)
+        self.assertEqual(current_detection.predicted_center_of_mass, None)
+        self.assertEqual(current_detection.velocities, None)
+
+    def test_unsuitable_match_classification(self):
+        current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
+        current_detection.classification = 1
+        last_detection, last_image = self.make_last_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
+        last_detection.classification = 2
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
 

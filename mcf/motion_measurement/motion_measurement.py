@@ -23,7 +23,7 @@ class MotionMeasurement:
     def run(self, image_gray: Frame, image_gray_last: Frame, detection_regions: list[DetectionRegion]):
         for detection_region in detection_regions:
             mask = detection_region.mask
-            bounding_box = detection_region.bounding_box
+            bounding_box = detection_region.measured_bounding_box
             status, end_points = self._get_features(image_gray, mask, bounding_box)
 
             if status == MotionMeasurementStatus.SUCCESS:

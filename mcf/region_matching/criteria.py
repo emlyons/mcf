@@ -9,8 +9,8 @@ def get_match(last: DetectionRegion, last_image: np.array, current: DetectionReg
     predicted_bbox = last.next_bounding_box
     predicted_com = Point(predicted_com.x + predicted_bbox.upper_left.x, predicted_com.y + predicted_bbox.upper_left.y)
 
-    measured_com = current.center_of_mass
-    measured_bbox = current.bounding_box
+    measured_com = current.measured_center_of_mass
+    measured_bbox = current.measured_bounding_box
     measured_com = Point(measured_com.x + measured_bbox.upper_left.x, measured_com.y + measured_bbox.upper_left.y)
 
     # center of mass distance
@@ -20,9 +20,9 @@ def get_match(last: DetectionRegion, last_image: np.array, current: DetectionReg
     iou = intersection_over_union(predicted_bbox, measured_bbox)
 
     # mask correlation
-    correlation = correlate_mask_regions(last.mask, last.bounding_box, last_image, current.mask, current.bounding_box, current_image)
+    # correlation = correlate_mask_regions(last.mask, last.measured_bounding_box, last_image, current.mask, current.measure_bounding_box, current_image)
 
-    match =  Match(last_index=None, current_index=None, total_cost=None, cost=None, distance=distance, iou=iou, correlation=correlation)
+    match =  Match(last_index=None, last_detection=last, current_index=None, current_detection=current, total_cost=None, cost=None, distance=distance, iou=iou, correlation=1.0)
     _ = cost_function(match)
     return match
 

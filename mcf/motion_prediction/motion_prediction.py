@@ -12,8 +12,8 @@ def motion_prediction(detection_regions: list[DetectionRegion]) -> MotionPredict
         if velocities is not None:
             filter_coeffs = make_filter(min(len(velocities), 5))
             translation_vector = prediction_model(velocities, filter_coeffs)
-            detection_region.next_center_of_mass = predict_center_of_mass(detection_region.center_of_mass, translation_vector)
-            detection_region.next_bounding_box = predict_bounding_box(detection_region.bounding_box, translation_vector)
+            detection_region.next_center_of_mass = predict_center_of_mass(detection_region.measured_center_of_mass, translation_vector)
+            detection_region.next_bounding_box = predict_bounding_box(detection_region.measured_bounding_box, translation_vector)
     return status
 
 def make_filter(size) -> list[float]:

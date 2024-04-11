@@ -7,92 +7,71 @@ class TestMotionPrediction(unittest.TestCase):
         self.detection = DetectionRegion(classification=1,
                                          confidence=1.0,
                                          mask=None,
-                                         bounding_box=BoundingBox(Point(0,0),Point(2,2)),
-                                         center_of_mass=Point(1,1))
+                                         measured_bounding_box=BoundingBox(Point(0,0),Point(2,2)),
+                                         measured_center_of_mass=Point(1,1))
         return
 
     def tearDown(self):
         return
     
-    # def predict(self):
-    #     return motion_prediction([self.detection])
+    def predict(self):
+        return motion_prediction([self.detection])
 
     def test_run(self):
-        self.detection.velocities = [(10,10)]
-        # status = self.predict()
-        # self.assertEqual(MotionPredictionStatus.SUCCESS, status)
+        self.detection.velocities = [Point(10,10)]
+        status = self.predict()
+        self.assertEqual(MotionPredictionStatus.SUCCESS, status)
 
-    # def test_location_prediction_center_of_mass(self):
-    #     self.detection.velocities = [(10,10)]
-    #     _ = self.predict()
-    #     observed_y, obversed_x = self.detection.next_center_of_mass
-    #     last_y, last_x = self.detection.center_of_mass
-    #     expected_y, expected_x = last_y+10, last_x+10
-        
-    #     self.assertEqual(expected_y, observed_y)
-    #     self.assertEqual(expected_x, obversed_x)
+    def test_location_prediction_center_of_mass(self):
+        self.detection.velocities = [Point(10,10)]
+        _ = self.predict()
+        next_com = self.detection.next_center_of_mass
+        measure_com = self.detection.measured_center_of_mass        
+        self.assertEqual(measure_com.y+10, next_com.y)
+        self.assertEqual(measure_com.x+10, next_com.x)
 
-    # def test_location_prediction_bounding_box(self):
-    #     self.detection.velocities = [(10,10)]
-    #     _ = self.predict()
-    #     (x0,y0),(x1,y1) = self.detection.next_bounding_box
-    #     (lx0,ly0),(lx1,ly1) = self.detection.bounding_box
-    #     expected_x0 = lx0 + 10
-    #     expected_y0 = ly0 + 10
-    #     expected_x1 = lx1 + 10
-    #     expected_y1 = ly1 + 10
-        
-    #     self.assertEqual(expected_x0, x0)
-    #     self.assertEqual(expected_y0, y0)
-    #     self.assertEqual(expected_x1, x1)
-    #     self.assertEqual(expected_y1, y1)
+    def test_location_prediction_bounding_box(self):
+        self.detection.velocities = [Point(10,10)]
+        _ = self.predict()
+        next_bbox = self.detection.next_bounding_box
+        measure_bbox = self.detection.measured_bounding_box        
+        self.assertEqual(measure_bbox.upper_left.x + 10, next_bbox.upper_left.x)
+        self.assertEqual(measure_bbox.upper_left.y + 10, next_bbox.upper_left.y)
+        self.assertEqual(measure_bbox.lower_right.x + 10, next_bbox.lower_right.x)
+        self.assertEqual(measure_bbox.lower_right.y + 10, next_bbox.lower_right.y)
 
-    # def test_location_prediction_center_of_mass_with_filtering(self):
-    #     self.detection.velocities = [(10,10),(10,10),(10,10),(10,10),(10,10),(10,10)]
-    #     _ = self.predict()
-    #     observed_y, obversed_x = self.detection.next_center_of_mass
-    #     last_y, last_x = self.detection.center_of_mass
-    #     expected_y, expected_x = last_y+10, last_x+10
-        
-    #     self.assertEqual(expected_y, observed_y)
-    #     self.assertEqual(expected_x, obversed_x)
+    def test_location_prediction_center_of_mass_with_filtering(self):
+        self.detection.velocities = [Point(10,10),Point(10,10),Point(10,10),Point(10,10),Point(10,10),Point(10,10)]
+        _ = self.predict()
+        next_com = self.detection.next_center_of_mass
+        measure_com = self.detection.measured_center_of_mass        
+        self.assertEqual(measure_com.y+10, next_com.y)
+        self.assertEqual(measure_com.x+10, next_com.x)
 
-    # def test_location_prediction_bounding_box_with_filtering(self):
-    #     self.detection.velocities = [(10,10),(10,10),(10,10),(10,10),(10,10),(10,10)]
-    #     _ = self.predict()
-    #     (x0,y0),(x1,y1) = self.detection.next_bounding_box
-    #     (lx0,ly0),(lx1,ly1) = self.detection.bounding_box
-    #     expected_x0 = lx0 + 10
-    #     expected_y0 = ly0 + 10
-    #     expected_x1 = lx1 + 10
-    #     expected_y1 = ly1 + 10
-        
-    #     self.assertEqual(expected_x0, x0)
-    #     self.assertEqual(expected_y0, y0)
-    #     self.assertEqual(expected_x1, x1)
-    #     self.assertEqual(expected_y1, y1)
+    def test_location_prediction_bounding_box_with_filtering(self):
+        self.detection.velocities = [Point(10,10),Point(10,10),Point(10,10),Point(10,10),Point(10,10),Point(10,10)]
+        _ = self.predict()
+        next_bbox = self.detection.next_bounding_box
+        measure_bbox = self.detection.measured_bounding_box        
+        self.assertEqual(measure_bbox.upper_left.x + 10, next_bbox.upper_left.x)
+        self.assertEqual(measure_bbox.upper_left.y + 10, next_bbox.upper_left.y)
+        self.assertEqual(measure_bbox.lower_right.x + 10, next_bbox.lower_right.x)
+        self.assertEqual(measure_bbox.lower_right.y + 10, next_bbox.lower_right.y)
 
-    # def test_location_prediction_center_of_mass_with_filtering_and_noise(self):
-    #     self.detection.velocities = [(10,11),(9,10),(11,10),(10,9),(9,9),(11,11)]
-    #     _ = self.predict()
-    #     observed_y, obversed_x = self.detection.next_center_of_mass
-    #     last_y, last_x = self.detection.center_of_mass
-    #     expected_y, expected_x = last_y+10, last_x+10
-        
-    #     self.assertEqual(expected_y, observed_y)
-    #     self.assertEqual(expected_x, obversed_x)
+    def test_location_prediction_center_of_mass_with_filtering_and_noise(self):
+        self.detection.velocities = [Point(10,21),Point(9,20),Point(11,20),Point(10,19),Point(9,19),Point(11,21)]
+        _ = self.predict()
+        next_com = self.detection.next_center_of_mass
+        measure_com = self.detection.measured_center_of_mass        
+        self.assertEqual(measure_com.y+20, next_com.y)
+        self.assertEqual(measure_com.x+10, next_com.x)
 
-    # def test_location_prediction_bounding_box_with_filtering_and_noise(self):
-    #     self.detection.velocities = [(10,11),(9,10),(11,10),(10,9),(9,9),(11,11)]
-    #     _ = self.predict()
-    #     (x0,y0),(x1,y1) = self.detection.next_bounding_box
-    #     (lx0,ly0),(lx1,ly1) = self.detection.bounding_box
-    #     expected_x0 = lx0 + 10
-    #     expected_y0 = ly0 + 10
-    #     expected_x1 = lx1 + 10
-    #     expected_y1 = ly1 + 10
-        
-    #     self.assertEqual(expected_x0, x0)
-    #     self.assertEqual(expected_y0, y0)
-    #     self.assertEqual(expected_x1, x1)
-    #     self.assertEqual(expected_y1, y1)
+    def test_location_prediction_bounding_box_with_filtering_and_noise(self):
+        self.detection.velocities = [Point(10,11),Point(9,10),Point(11,10),Point(10,9),Point(9,9),Point(11,11)]
+        _ = self.predict()
+        next_bbox = self.detection.next_bounding_box
+        measure_bbox = self.detection.measured_bounding_box        
+        self.assertEqual(measure_bbox.upper_left.x + 10, next_bbox.upper_left.x)
+        self.assertEqual(measure_bbox.upper_left.y + 10, next_bbox.upper_left.y)
+        self.assertEqual(measure_bbox.lower_right.x + 10, next_bbox.lower_right.x)
+        self.assertEqual(measure_bbox.lower_right.y + 10, next_bbox.lower_right.y)

@@ -27,8 +27,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -43,8 +43,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -60,8 +60,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -77,8 +77,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -94,8 +94,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -110,8 +110,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -126,8 +126,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
@@ -143,8 +143,8 @@ class TestMotionMeasurement(unittest.TestCase):
         detection_region = DetectionRegion(classification=0,
                                            confidence=1.0,
                                            mask=np.ones((lry-uly, lrx-ulx)),
-                                           bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
-                                           center_of_mass=Point(0,0))
+                                           measured_bounding_box=BoundingBox(Point(ulx,uly), Point(lrx,lry)),
+                                           measured_center_of_mass=Point(0,0))
 
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
