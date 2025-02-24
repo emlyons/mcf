@@ -5,6 +5,7 @@ from mcf.data_types import Frame, DetectionRegion, BoundingBox, Point
 GREEN = (0,255,0)
 RED = (0,0,255)
 PURPLE = (200, 0, 256)
+YELLOW = (25,255,245)
 
 def add_bounding_box(image: np.array, detection_region: DetectionRegion, bbox_color=GREEN, text_color=PURPLE):
     bbox: BoundingBox = detection_region.measured_bounding_box
@@ -31,9 +32,16 @@ def add_mask(image: np.array, detection_region: DetectionRegion):
 def add_velocity(image: np.array, detection_region: DetectionRegion):
     velocity: Point = detection_region.velocities[0]
     upper_left = detection_region.measured_bounding_box.upper_left
-    start_point = (upper_left.x + detection_region.measured_center_of_mass.x, upper_left.y + detection_region.measure_center_of_mass.y) # xy for opencv
-    end_point = start_point[0] + 20*velocity.x, start_point[1] + 20*velocity.y # scale for visual effect - xy for opencv
-    image = cv.arrowedLine(image, start_point, end_point, (25,255,245), 10)
+    start_point = int(upper_left.x + detection_region.measured_center_of_mass.x), int(upper_left.y + detection_region.measured_center_of_mass.y) # xy for opencv
+    end_point = int(start_point[0] + 20*velocity.x), int(start_point[1] + 20*velocity.y) # scale for visual effect - xy for opencv
+    image = cv.arrowedLine(image, start_point, end_point, YELLOW, 10)
+
+def add_location_history(image: np.array, detection_region: DetectionRegion):
+    if detection_region.locations is not None and len(detection_region.locations) > 1:
+        for idx in range(len(detection_region.locations)-1):
+            start_point = detection_region.locations[idx].x, detection_region.locations[idx].y
+            end_point = detection_region.locations[idx+1].x, detection_region.locations[idx+1].y
+            image = cv.arrowedLine(image, start_point, end_point, RED, 10)
 
 class Display:
 
@@ -47,6 +55,8 @@ class Display:
                 add_mask(display_image, detection_region)
             if velocity:
                 add_velocity(display_image, detection_region)
+
+            add_location_history(display_image, detection_region)
 
         cv.imshow("", display_image)
         cv.waitKey(1)

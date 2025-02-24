@@ -57,7 +57,7 @@ class Processor:
                 status = self._region_matching(current_frame, last_frame)
 
             # filtering w/ kalman or partical filter for measurement and prediction resolution (current, last)
-            
+            print('filtering')
 
 
             # motion based degredation model

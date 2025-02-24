@@ -15,4 +15,5 @@ class DetectionRegion:
     predicted_bounding_box: BoundingBox = None # prediction for current bounding box
     predicted_center_of_mass: Point = None # prediction for current center of mass
     velocities: list[Point] = None # the last N velocities as, pixels / (seconds per frame)
+    velocities_variance: list[Point] = None # the variance of the last N velocities
     locations: list[Point] = None # location history

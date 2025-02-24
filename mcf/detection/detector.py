@@ -40,17 +40,20 @@ class Detector:
         if status == DetectionStatus.SUCCESS:
             for (box, mask) in zip(model_output.boxes, model_output.masks):
                 class_id = int(box.cls.item())
-                ulx,uly,lrx,lry = np.array(box.xyxy.tolist()[0]).astype('int')
+                if class_id == 2:
+                    ulx,uly,lrx,lry = np.array(box.xyxy.tolist()[0]).astype('int')
 
-                bounding_box = BoundingBox(Point(ulx, uly), Point(lrx, lry))
-                    
-                mask = mask.cpu().numpy().data[0]
-                mask = cv.resize(mask, (image.shape[1], image.shape[0]), cv.INTER_LINEAR)[uly:lry, ulx:lrx]
-                center_of_mass = get_center_of_mass(mask)
+                    bounding_box = BoundingBox(Point(ulx, uly), Point(lrx, lry))
+                        
+                    mask = mask.cpu().numpy().data[0]
+                    mask = cv.resize(mask, (image.shape[1], image.shape[0]), cv.INTER_LINEAR)[uly:lry, ulx:lrx]
+                    center_of_mass = get_center_of_mass(mask)
 
-                class_id = box.cls.item()
-                confidence = box.conf.item()
-                detection_regions.append(DetectionRegion(class_id, confidence, mask, bounding_box, center_of_mass))
+                    location = bounding_box.upper_left + center_of_mass
+
+                    class_id = box.cls.item()
+                    confidence = box.conf.item()
+                    detection_regions.append(DetectionRegion(class_id, confidence, mask, bounding_box, center_of_mass, locations=[location]))
 
         return status, detection_regions
 

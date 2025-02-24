@@ -129,6 +129,7 @@ def _assign_matches(last_detection_regions: list[DetectionRegion], current_detec
         current.predicted_bounding_box = last.next_bounding_box
         current.predicted_center_of_mass = last.next_center_of_mass
         current.velocities = current.velocities + last.velocities if current.velocities else last.velocities
+        current.locations = current.locations + last.locations if current.locations else last.locations
 
     return RegionMatchingStatus.SUCCESS
 
