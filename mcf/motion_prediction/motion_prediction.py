@@ -4,12 +4,12 @@ from mcf.motion_prediction.motion_prediction_status import MotionPredictionStatu
 
 def motion_prediction(detection_regions: list[DetectionRegion]) -> MotionPredictionStatus:
     # predict next locations from last_detection_regions
-    # update last detection regions w/ prediction
+    # update last detection regions with prediction
     # linear model: x0 + V t
     status = MotionPredictionStatus.SUCCESS
     for detection_region in detection_regions:
         velocities = detection_region.velocities
-        if velocities is not None:
+        if len(velocities) > 0:
             filter_coeffs = make_filter(min(len(velocities), 5))
             translation_vector = prediction_model(velocities, filter_coeffs)
             detection_region.next_center_of_mass = predict_center_of_mass(detection_region.measured_center_of_mass, translation_vector)

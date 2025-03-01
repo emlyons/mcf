@@ -1,7 +1,7 @@
 import numpy as np
 from mcf.data_types.point import Point
 from mcf.data_types.bounding_box import BoundingBox
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class DetectionRegion:
@@ -14,6 +14,6 @@ class DetectionRegion:
     next_center_of_mass: Point = None # predicted center of mass in next frame
     predicted_bounding_box: BoundingBox = None # prediction for current bounding box
     predicted_center_of_mass: Point = None # prediction for current center of mass
-    velocities: list[Point] = None # the last N velocities as, pixels / (seconds per frame)
-    velocities_variance: list[Point] = None # the variance of the last N velocities
-    locations: list[Point] = None # location history
+    velocities: list[Point] = field(default_factory=lambda: []) # the last N velocities as, pixels / (seconds per frame)
+    velocities_variance: list[Point] = field(default_factory=lambda: []) # the variance of the last N velocities
+    locations: list[Point] = field(default_factory=lambda: []) # location history

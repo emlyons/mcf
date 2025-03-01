@@ -118,8 +118,8 @@ def store_match_permutation(match_min_heap, current_match, subproblem_matches) -
     
 def _assign_matches(last_detection_regions: list[DetectionRegion], current_detection_regions: list[DetectionRegion], matches: list[Match]) -> RegionMatchingStatus:
     for match in matches:
-        last = last_detection_regions[match.last_index]
-        current = current_detection_regions[match.current_index]
+        last: DetectionRegion = last_detection_regions[match.last_index]
+        current: DetectionRegion = current_detection_regions[match.current_index]
         
         if current.predicted_bounding_box is not None:
             return RegionMatchingStatus.ERROR_CONFLICTING_MATCH

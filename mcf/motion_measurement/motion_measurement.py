@@ -32,8 +32,8 @@ class MotionMeasurement:
 
             if status == MotionMeasurementStatus.SUCCESS:
                 measurement, variance = self._refine_measurement(motion_measurements)
-                detection_region.velocities = [measurement]
-                detection_region.velocities_variance = [variance]
+                detection_region.velocities.insert(0, measurement)
+                detection_region.velocities_variance.insert(0, variance)
 
         return status
             

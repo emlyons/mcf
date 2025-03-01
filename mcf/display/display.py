@@ -30,11 +30,12 @@ def add_mask(image: np.array, detection_region: DetectionRegion):
     image[bbox.upper_left.y:bbox.lower_right.y, bbox.upper_left.x:bbox.lower_right.x, 1] = box
 
 def add_velocity(image: np.array, detection_region: DetectionRegion):
-    velocity: Point = detection_region.velocities[0]
-    upper_left = detection_region.measured_bounding_box.upper_left
-    start_point = int(upper_left.x + detection_region.measured_center_of_mass.x), int(upper_left.y + detection_region.measured_center_of_mass.y) # xy for opencv
-    end_point = int(start_point[0] + 20*velocity.x), int(start_point[1] + 20*velocity.y) # scale for visual effect - xy for opencv
-    image = cv.arrowedLine(image, start_point, end_point, YELLOW, 10)
+    if (len(detection_region.velocities) > 0):
+        velocity: Point = detection_region.velocities[0]
+        upper_left = detection_region.measured_bounding_box.upper_left
+        start_point = int(upper_left.x + detection_region.measured_center_of_mass.x), int(upper_left.y + detection_region.measured_center_of_mass.y) # xy for opencv
+        end_point = int(start_point[0] + 20*velocity.x), int(start_point[1] + 20*velocity.y) # scale for visual effect - xy for opencv
+        image = cv.arrowedLine(image, start_point, end_point, YELLOW, 10)
 
 def add_location_history(image: np.array, detection_region: DetectionRegion):
     if detection_region.locations is not None and len(detection_region.locations) > 1:
