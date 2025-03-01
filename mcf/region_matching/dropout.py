@@ -26,8 +26,7 @@ def make_phantom_detection_region(detection_region: DetectionRegion) -> Detectio
                                                 measured_bounding_box=detection_region.next_bounding_box,
                                                 next_bounding_box=None,
                                                 next_center_of_mass=None,
-                                                predicted_bounding_box=detection_region.next_bounding_box,
-                                                predicted_center_of_mass=detection_region.next_center_of_mass,
                                                 velocities=detection_region.velocities,
-                                                locations=[detection_region.next_bounding_box.upper_left + detection_region.next_center_of_mass] + detection_region.locations)
+                                                locations=[detection_region.next_bounding_box.upper_left + detection_region.next_center_of_mass] + detection_region.locations,
+                                                matched=True)
     return phantom_detection

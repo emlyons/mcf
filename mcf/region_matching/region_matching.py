@@ -7,13 +7,13 @@ from mcf.region_matching.dropout import is_valid_match, make_phantom_detection_r
 
 def region_matching(last_detection_regions: list[DetectionRegion], last_image: np.array, current_detection_regions: list[DetectionRegion], current_image: np.array) -> RegionMatchingStatus:
 
-    status, matches = _get_optimal_matches(last_detection_regions=last_detection_regions \
-                                         , last_image=last_image \
-                                         , last_available=np.arange(len(last_detection_regions)).tolist() \
-                                         , current_detection_regions=current_detection_regions \
-                                         , current_image=current_image \
-                                         , current_index=0 \
-                                         , memo = {})
+    status, matches = _get_optimal_matches(last_detection_regions=last_detection_regions,
+                                           last_image=last_image,
+                                           last_available=np.arange(len(last_detection_regions)).tolist(),
+                                           current_detection_regions=current_detection_regions,
+                                           current_image=current_image,
+                                           current_index=0,
+                                           memo = {})
     
     if status == RegionMatchingStatus.SUCCESS:
         remove_invalid_matches(matches=matches)
@@ -53,13 +53,13 @@ def skip_matching_current(last_detection_regions: list[DetectionRegion], last_im
         subproblem_matches = memo[memo_index]
     
     else:
-        status, subproblem_matches = _get_optimal_matches(last_detection_regions=last_detection_regions \
-                                                        , last_image=last_image \
-                                                        , last_available=last_available \
-                                                        , current_detection_regions=current_detection_regions \
-                                                        , current_image=current_image \
-                                                        , current_index=current_index+1 \
-                                                        , memo=memo)
+        status, subproblem_matches = _get_optimal_matches(last_detection_regions=last_detection_regions,
+                                                          last_image=last_image,
+                                                          last_available=last_available,
+                                                          current_detection_regions=current_detection_regions,
+                                                          current_image=current_image,
+                                                          current_index=current_index+1,
+                                                          memo=memo)
         if status == RegionMatchingStatus.SUCCESS:
             memo[memo_index] = subproblem_matches
     if status == RegionMatchingStatus.SUCCESS:
@@ -89,13 +89,13 @@ def match_current(last_detection_regions: list[DetectionRegion], last_image: np.
                 subproblem_matches = memo[memo_index]
 
             else:
-                status, subproblem_matches = _get_optimal_matches(last_detection_regions=last_detection_regions \
-                                                                , last_image=last_image \
-                                                                , last_available=last_remaining \
-                                                                , current_detection_regions=current_detection_regions \
-                                                                , current_image=current_image \
-                                                                , current_index=current_index+1 \
-                                                                , memo=memo)
+                status, subproblem_matches = _get_optimal_matches(last_detection_regions=last_detection_regions,
+                                                                  last_image=last_image,
+                                                                  last_available=last_remaining,
+                                                                  current_detection_regions=current_detection_regions,
+                                                                  current_image=current_image,
+                                                                  current_index=current_index+1,
+                                                                  memo=memo)
                 if status == RegionMatchingStatus.SUCCESS:
                     memo[memo_index] = subproblem_matches
             if status == RegionMatchingStatus.SUCCESS:
@@ -121,15 +121,12 @@ def _assign_matches(last_detection_regions: list[DetectionRegion], current_detec
         last: DetectionRegion = last_detection_regions[match.last_index]
         current: DetectionRegion = current_detection_regions[match.current_index]
         
-        if current.predicted_bounding_box is not None:
-            return RegionMatchingStatus.ERROR_CONFLICTING_MATCH
-        if current.predicted_center_of_mass is not None:
+        if current.matched:
             return RegionMatchingStatus.ERROR_CONFLICTING_MATCH
 
-        current.predicted_bounding_box = last.next_bounding_box
-        current.predicted_center_of_mass = last.next_center_of_mass
         current.velocities = current.velocities + last.velocities if current.velocities else last.velocities
         current.locations = current.locations + last.locations if current.locations else last.locations
+        current.matched = True
 
     return RegionMatchingStatus.SUCCESS
 
