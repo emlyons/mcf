@@ -20,7 +20,7 @@ class MotionMeasurement:
                               criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03)) 
 
 
-    def run(self, image_gray: Frame, image_gray_last: Frame, detection_regions: list[DetectionRegion]):
+    def run(self, image_gray: np.array, image_gray_last: np.array, detection_regions: list[DetectionRegion]):
         status = MotionMeasurementStatus.SUCCESS
         for detection_region in detection_regions:
             mask = detection_region.mask
