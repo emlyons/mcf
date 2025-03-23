@@ -57,7 +57,8 @@ class Processor:
                 status = self._region_matching(current_frame, last_frame)
 
             # filtering w/ kalman or partical filter for measurement and prediction resolution (current, last)
-            print('filtering')
+            if status == ProcessorStatus.SUCCESS:
+                status = self._state_estimation(current_frame)
 
 
             # motion based degredation model
@@ -113,11 +114,19 @@ class Processor:
         return status
 
     def _region_matching(self, frame: Frame, last_frame: Frame) -> ProcessorStatus:
-        status = region_matching(last_detection_regions=last_frame.detection_regions \
-                               , last_image=last_frame.image \
-                               , current_detection_regions=frame.detection_regions \
-                               , current_image=frame.image)
+        status = region_matching(last_detection_regions=last_frame.detection_regions,
+                                 last_image=last_frame.image,
+                                 current_detection_regions=frame.detection_regions,
+                                 current_image=frame.image)
         if status == RegionMatchingStatus.SUCCESS:
+            status = ProcessorStatus.SUCCESS
+        else:
+            status = ProcessorStatus.ERROR_INTERNAL
+        return status
+    
+    def _state_estimation(self, frame: Frame) -> ProcessorStatus:
+        status = state_estimation(frame)
+        if status == StateEstimationStatus.SUCCESS:
             status = ProcessorStatus.SUCCESS
         else:
             status = ProcessorStatus.ERROR_INTERNAL
