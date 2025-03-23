@@ -54,7 +54,8 @@ class TestDetection(unittest.TestCase):
 
         # center of mass results
         center_of_mass = detection_regions[0].measured_center_of_mass
-        self.assertEqual(Point(86, 49), center_of_mass)
+        self.assertAlmostEqual(86.082912, center_of_mass.x, delta=1e-5)
+        self.assertAlmostEqual(47.971624, center_of_mass.y, delta=1e-5)
         
 
 if __name__ == '__main__':

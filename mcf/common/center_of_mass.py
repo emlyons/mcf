@@ -15,6 +15,6 @@ def get_center_of_mass(array: np.array):
                 x_count += 1
                 y_sum += y
                 y_count += 1
-    x_center_of_mass = x_sum // x_count
-    y_center_of_mass = y_sum // y_count
+    x_center_of_mass = x_sum / x_count
+    y_center_of_mass = y_sum / y_count
     return Point(x_center_of_mass, y_center_of_mass)

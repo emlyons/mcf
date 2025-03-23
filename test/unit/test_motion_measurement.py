@@ -33,7 +33,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
     def test_x_motion_negative(self):
         expected_velocity = Point(-10, 0)
@@ -49,7 +50,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
 
     def test_y_motion(self):
@@ -66,7 +68,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
 
     def test_y_motion_negative(self):
@@ -83,7 +86,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
 
     def test_xy_motion_1(self):
@@ -100,7 +104,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
     def test_xy_motion_2(self):
         expected_velocity = Point(10, -10)
@@ -116,7 +121,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
     def test_xy_motion_3(self):
         expected_velocity = Point(-10, 10)
@@ -132,7 +138,8 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
 
 
     def test_xy_motion_4(self):
@@ -149,5 +156,6 @@ class TestMotionMeasurement(unittest.TestCase):
         self.motion_measurement.run(image_gray=image_x_shifted, image_gray_last=self.image, detection_regions=[detection_region])
         observed_velocity = detection_region.velocities[0]
         
-        self.assertEqual(expected_velocity, round(observed_velocity))
+        self.assertEqual(expected_velocity.x, round(observed_velocity.x))
+        self.assertEqual(expected_velocity.y, round(observed_velocity.y))
         
