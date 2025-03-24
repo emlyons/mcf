@@ -42,7 +42,9 @@ def add_location_history(image: np.array, detection_region: DetectionRegion):
         for idx in range(len(detection_region.locations)-1):
             start_point = detection_region.locations[idx].x, detection_region.locations[idx].y
             end_point = detection_region.locations[idx+1].x, detection_region.locations[idx+1].y
-            image = cv.arrowedLine(image, start_point, end_point, RED, 10)
+            p1 = tuple([int(start_point[0]), int(start_point[1])])
+            p2 = tuple([int(end_point[0]), int(end_point[1])])
+            image = cv.arrowedLine(image, p1, p2, RED, 10)
 
 class Display:
 
