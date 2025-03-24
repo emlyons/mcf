@@ -19,7 +19,9 @@ class TestMotionPrediction(unittest.TestCase):
                                     confidence=1.0,
                                     mask=gaussian_2d(mask_Y, mask_X) + noise(mask_Y, mask_X),
                                     measured_bounding_box=bbox,
-                                    measured_center_of_mass=com)
+                                    measured_center_of_mass=com,
+                                    velocities=[Point(4,4)],
+                                    locations=[Point(7,7)])
         return detection, image
         
     def make_last_test_detection_region(self, com: Point, bbox: BoundingBox) -> DetectionRegion:
@@ -32,7 +34,8 @@ class TestMotionPrediction(unittest.TestCase):
                                     measured_center_of_mass=Point(1,1),
                                     next_bounding_box=bbox,
                                     next_center_of_mass=com,
-                                    velocities=[Point(2,2), Point(1,1), Point(0,0)])
+                                    velocities=[Point(2,2), Point(1,1), Point(0,0)],
+                                    locations=[Point(0,0), Point(1,1), Point(3,3)])
         return detection, image
 
     def test_one_match(self):
@@ -41,9 +44,10 @@ class TestMotionPrediction(unittest.TestCase):
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
         
-        self.assertEqual(current_detection.predicted_bounding_box, last_detection.next_bounding_box)
-        self.assertEqual(current_detection.predicted_center_of_mass, last_detection.next_center_of_mass)
-        self.assertEqual(current_detection.velocities, last_detection.velocities)
+        self.assertEqual(current_detection.matched, True)
+        self.assertListEqual(current_detection.velocities[1:], last_detection.velocities)
+        self.assertListEqual(current_detection.locations[1:], last_detection.locations)
+
 
     def test_competing_matches_decision_by_bounding_box(self):
         current_detection, current_image = self.make_current_test_detection_region()
@@ -52,9 +56,9 @@ class TestMotionPrediction(unittest.TestCase):
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection_worse, last_detection_better], last_image, [current_detection], current_image))
         
-        self.assertEqual(current_detection.predicted_bounding_box, last_detection_better.next_bounding_box)
-        self.assertEqual(current_detection.predicted_center_of_mass, last_detection_better.next_center_of_mass)
-        self.assertEqual(current_detection.velocities, last_detection_better.velocities)
+        self.assertEqual(current_detection.matched, True)
+        self.assertListEqual(current_detection.velocities[1:], last_detection_better.velocities)
+        self.assertListEqual(current_detection.locations[1:], last_detection_better.locations)
 
     def test_competing_matches_decision_by_center_of_mass(self):
         current_detection, current_image = self.make_current_test_detection_region()
@@ -62,10 +66,10 @@ class TestMotionPrediction(unittest.TestCase):
         last_detection_worse, _ = self.make_last_test_detection_region(Point(10,11), current_detection.measured_bounding_box)
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection_worse, last_detection_better], last_image, [current_detection], current_image))
-        
-        self.assertEqual(current_detection.predicted_bounding_box, last_detection_better.next_bounding_box)
-        self.assertEqual(current_detection.predicted_center_of_mass, last_detection_better.next_center_of_mass)
-        self.assertEqual(current_detection.velocities, last_detection_better.velocities)
+
+        self.assertEqual(current_detection.matched, True)
+        self.assertListEqual(current_detection.velocities[1:], last_detection_better.velocities)
+        self.assertListEqual(current_detection.locations[1:], last_detection_better.locations)
 
     def test_two_matches(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(10,11), bbox=BoundingBox(Point(5,6), Point(15,16)))
@@ -77,12 +81,13 @@ class TestMotionPrediction(unittest.TestCase):
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
 
-        self.assertEqual(current_detection_1.predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detection_1.predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detection_1.velocities, last_detection_1.velocities)
-        self.assertEqual(current_detection_2.predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detection_2.predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detection_2.velocities, last_detection_2.velocities)
+        self.assertEqual(current_detection_1.matched, True)
+        self.assertListEqual(current_detection_1.velocities[1:], last_detection_1.velocities)
+        self.assertListEqual(current_detection_1.locations[1:], last_detection_1.locations)
+
+        self.assertEqual(current_detection_2.matched, True)
+        self.assertListEqual(current_detection_2.velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detection_2.locations[1:], last_detection_2.locations)
 
     def test_three_matches(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -96,15 +101,17 @@ class TestMotionPrediction(unittest.TestCase):
         
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
 
-        self.assertEqual(current_detection_1.predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detection_1.predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detection_1.velocities, last_detection_1.velocities)
-        self.assertEqual(current_detection_2.predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detection_2.predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detection_2.velocities, last_detection_2.velocities)
-        self.assertEqual(current_detection_3.predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detection_3.predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detection_3.velocities, last_detection_3.velocities)
+        self.assertEqual(current_detection_1.matched, True)
+        self.assertListEqual(current_detection_1.velocities[1:], last_detection_1.velocities)
+        self.assertListEqual(current_detection_1.locations[1:], last_detection_1.locations)
+
+        self.assertEqual(current_detection_2.matched, True)
+        self.assertListEqual(current_detection_2.velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detection_2.locations[1:], last_detection_2.locations)
+
+        self.assertEqual(current_detection_3.matched, True)
+        self.assertListEqual(current_detection_3.velocities[1:], last_detection_3.velocities)
+        self.assertListEqual(current_detection_3.locations[1:], last_detection_3.locations)
 
     def test_unsuitable_match_distance(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
@@ -112,9 +119,9 @@ class TestMotionPrediction(unittest.TestCase):
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
 
-        self.assertEqual(current_detection.predicted_bounding_box, None)
-        self.assertEqual(current_detection.predicted_center_of_mass, None)
-        self.assertEqual(current_detection.velocities, None)
+        self.assertEqual(current_detection.matched, False)
+        self.assertEqual(len(current_detection.velocities), 1)
+        self.assertEqual(len(current_detection.locations), 1)
 
     def test_unsuitable_match_classification(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
@@ -124,21 +131,21 @@ class TestMotionPrediction(unittest.TestCase):
 
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, [current_detection], current_image))
 
-        self.assertEqual(current_detection.predicted_bounding_box, None)
-        self.assertEqual(current_detection.predicted_center_of_mass, None)
-        self.assertEqual(current_detection.velocities, None)
+        self.assertEqual(current_detection.matched, False)
+        self.assertEqual(len(current_detection.velocities), 1)
+        self.assertEqual(len(current_detection.locations), 1)
 
     def test_last_targets_but_no_current_targets(self):
         current_detections = []
         _, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
         last_detection, last_image = self.make_last_test_detection_region(com=Point(20,20), bbox=BoundingBox(Point(19,19), Point(21,21)))
 
+        self.assertEqual(0, len(current_detections))
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
 
         self.assertEqual(1, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection.velocities)
+        self.assertListEqual(current_detections[0].velocities, last_detection.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection.locations)
         
     def test_current_targets_but_no_last_targets(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
@@ -148,39 +155,36 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([], last_image, current_detections, current_image))
 
         self.assertEqual(1, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
 
     def test_phantom_match_and_new_target(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
         current_detections = [current_detection]
         last_detection, last_image = self.make_last_test_detection_region(com=Point(20,20), bbox=BoundingBox(Point(19,19), Point(21,21)))
 
+        self.assertEqual(1, len(current_detections))
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
 
         self.assertEqual(2, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection.velocities)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertListEqual(current_detections[1].velocities, last_detection.velocities)
+        self.assertListEqual(current_detections[1].locations[1:], last_detection.locations)
 
     def test_phantom_match_and_new_target_because_it_has_left_fov(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
         current_detections = [current_detection]
         last_detection, last_image = self.make_last_test_detection_region(com=Point(110,110), bbox=BoundingBox(Point(105,105), Point(115,115)))
 
+        self.assertEqual(1, len(current_detections))
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
 
         self.assertEqual(2, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection.velocities)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertListEqual(current_detections[1].velocities, last_detection.velocities)
+        self.assertListEqual(current_detections[1].locations[1:], last_detection.locations)
 
     def test_phantom_match_value_decays(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
@@ -191,9 +195,8 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
 
         self.assertEqual(1, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
 
     def test_unmatched_because_no_predictions(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(10,10), bbox=BoundingBox(Point(9,9), Point(11,11)))
@@ -207,9 +210,8 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching([last_detection], last_image, current_detections, current_image))
         
         self.assertEqual(1, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
 
     def test_3_last_1_current_1_match(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(23,23), bbox=BoundingBox(Point(18,18), Point(28,28)))
@@ -222,15 +224,12 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(3, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[2].predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detections[2].velocities, last_detection_3.velocities)
+        self.assertListEqual(current_detections[0].velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection_2.locations)
+        self.assertListEqual(current_detections[1].velocities, last_detection_1.velocities) # phantom
+        self.assertListEqual(current_detections[1].locations[1:], last_detection_1.locations)
+        self.assertListEqual(current_detections[2].velocities, last_detection_3.velocities) # phantom
+        self.assertListEqual(current_detections[2].locations[1:], last_detection_3.locations)
 
     def test_3_last_1_current_0_match(self):
         current_detection, current_image = self.make_current_test_detection_region(com=Point(15,70), bbox=BoundingBox(Point(10,65), Point(20,75)))
@@ -243,18 +242,14 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(4, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[2].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[2].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_3.velocities)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertListEqual(current_detections[1].velocities, last_detection_1.velocities) # phantom
+        self.assertListEqual(current_detections[1].locations[1:], last_detection_1.locations)
+        self.assertListEqual(current_detections[2].velocities, last_detection_2.velocities) # phantom
+        self.assertListEqual(current_detections[2].locations[1:], last_detection_2.locations)
+        self.assertListEqual(current_detections[3].velocities, last_detection_3.velocities) # phantom
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_3.locations)
 
     def test_1_last_3_current_1_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -267,15 +262,15 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(3, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[2].predicted_bounding_box, None)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[2].velocities, None)
+        self.assertEqual(current_detections[0].matched, False)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[1].matched, True)
+        self.assertListEqual(current_detections[1].velocities[1:], last_detection_1.velocities)
+        self.assertListEqual(current_detections[1].locations[1:], last_detection_1.locations)
+        self.assertEqual(current_detections[2].matched, False)
+        self.assertEqual(current_detections[2].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[2].locations, [Point(x=7, y=7)])
 
     def test_1_last_3_current_0_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -288,18 +283,18 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(4, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, None)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[1].velocities, None)
-        self.assertEqual(current_detections[2].predicted_bounding_box, None)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[2].velocities, None)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_1.velocities)
+        self.assertEqual(current_detections[0].matched, False)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[1].matched, False)
+        self.assertEqual(current_detections[1].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[1].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[2].matched, False)
+        self.assertEqual(current_detections[2].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[2].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[3].matched, True)
+        self.assertListEqual(current_detections[3].velocities, last_detection_1.velocities) # phantom
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_1.locations)
 
     def test_3_last_2_current_2_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -313,15 +308,15 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(3, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection_3.velocities)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[2].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[2].velocities, last_detection_1.velocities)
+        self.assertEqual(current_detections[0].matched, True)
+        self.assertListEqual(current_detections[0].velocities[1:], last_detection_3.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection_3.locations)
+        self.assertEqual(current_detections[1].matched, True)
+        self.assertListEqual(current_detections[1].velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detections[1].locations[1:], last_detection_2.locations)
+        self.assertEqual(current_detections[2].matched, True) # phantom
+        self.assertListEqual(current_detections[2].velocities, last_detection_1.velocities)
+        self.assertListEqual(current_detections[2].locations[1:], last_detection_1.locations)
 
     def test_3_last_2_current_1_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -335,18 +330,18 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(4, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection_3.velocities)
-        self.assertEqual(current_detections[1].predicted_bounding_box, None)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[1].velocities, None)
-        self.assertEqual(current_detections[2].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[2].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_2.velocities)
+        self.assertEqual(current_detections[0].matched, True)
+        self.assertListEqual(current_detections[0].velocities[1:], last_detection_3.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection_3.locations)
+        self.assertEqual(current_detections[1].matched, False)
+        self.assertEqual(current_detections[1].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[1].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[2].matched, True) # phantom
+        self.assertListEqual(current_detections[2].velocities, last_detection_1.velocities)
+        self.assertListEqual(current_detections[2].locations[1:], last_detection_1.locations)
+        self.assertEqual(current_detections[3].matched, True) # phantom
+        self.assertListEqual(current_detections[3].velocities, last_detection_2.velocities)
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_2.locations)
 
     def test_3_last_2_current_0_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -360,21 +355,21 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(5, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, None)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[1].velocities, None)
-        self.assertEqual(current_detections[2].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[2].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[4].predicted_bounding_box, last_detection_3.next_bounding_box)
-        self.assertEqual(current_detections[4].predicted_center_of_mass, last_detection_3.next_center_of_mass)
-        self.assertEqual(current_detections[4].velocities, last_detection_3.velocities)
+        self.assertEqual(current_detections[0].matched, False)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[1].matched, False)
+        self.assertEqual(current_detections[1].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[1].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[2].matched, True) # phantom
+        self.assertListEqual(current_detections[2].velocities, last_detection_1.velocities)
+        self.assertListEqual(current_detections[2].locations[1:], last_detection_1.locations)
+        self.assertEqual(current_detections[3].matched, True) # phantom
+        self.assertListEqual(current_detections[3].velocities, last_detection_2.velocities)
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_2.locations)
+        self.assertEqual(current_detections[4].matched, True) # phantom
+        self.assertListEqual(current_detections[4].velocities, last_detection_3.velocities)
+        self.assertListEqual(current_detections[4].locations[1:], last_detection_3.locations)
 
     def test_2_last_3_current_2_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -388,15 +383,15 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(3, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[1].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[1].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[2].predicted_bounding_box, None)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[2].velocities, None)
+        self.assertEqual(current_detections[0].matched, True)
+        self.assertListEqual(current_detections[0].velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection_2.locations)
+        self.assertEqual(current_detections[1].matched, True)
+        self.assertListEqual(current_detections[1].velocities[1:], last_detection_1.velocities)
+        self.assertListEqual(current_detections[1].locations[1:], last_detection_1.locations)
+        self.assertEqual(current_detections[2].matched, False)
+        self.assertEqual(current_detections[2].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[2].locations, [Point(x=7, y=7)])
 
     def test_2_last_3_current_1_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -410,18 +405,18 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(4, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[0].velocities, last_detection_2.velocities)
-        self.assertEqual(current_detections[1].predicted_bounding_box, None)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[1].velocities, None)
-        self.assertEqual(current_detections[2].predicted_bounding_box, None)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[2].velocities, None)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_1.velocities)
+        self.assertEqual(current_detections[0].matched, True)
+        self.assertListEqual(current_detections[0].velocities[1:], last_detection_2.velocities)
+        self.assertListEqual(current_detections[0].locations[1:], last_detection_2.locations)
+        self.assertEqual(current_detections[1].matched, False)
+        self.assertEqual(current_detections[1].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[1].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[2].matched, False)
+        self.assertEqual(current_detections[2].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[2].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[3].matched, True) # phantom
+        self.assertListEqual(current_detections[3].velocities, last_detection_1.velocities)
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_1.locations)
 
     def test_2_last_3_current_0_match(self):
         current_detection_1, current_image = self.make_current_test_detection_region(com=Point(5,5), bbox=BoundingBox(Point(0,0), Point(10,10)))
@@ -435,19 +430,19 @@ class TestMotionPrediction(unittest.TestCase):
         self.assertEqual(RegionMatchingStatus.SUCCESS, region_matching(last_detections, last_image, current_detections, current_image))
         
         self.assertEqual(5, len(current_detections))
-        self.assertEqual(current_detections[0].predicted_bounding_box, None)
-        self.assertEqual(current_detections[0].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[0].velocities, None)
-        self.assertEqual(current_detections[1].predicted_bounding_box, None)
-        self.assertEqual(current_detections[1].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[1].velocities, None)
-        self.assertEqual(current_detections[2].predicted_bounding_box, None)
-        self.assertEqual(current_detections[2].predicted_center_of_mass, None)
-        self.assertEqual(current_detections[2].velocities, None)
-        self.assertEqual(current_detections[3].predicted_bounding_box, last_detection_1.next_bounding_box)
-        self.assertEqual(current_detections[3].predicted_center_of_mass, last_detection_1.next_center_of_mass)
-        self.assertEqual(current_detections[3].velocities, last_detection_1.velocities)
-        self.assertEqual(current_detections[4].predicted_bounding_box, last_detection_2.next_bounding_box)
-        self.assertEqual(current_detections[4].predicted_center_of_mass, last_detection_2.next_center_of_mass)
-        self.assertEqual(current_detections[4].velocities, last_detection_2.velocities)
+        self.assertEqual(current_detections[0].matched, False)
+        self.assertEqual(current_detections[0].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[0].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[1].matched, False)
+        self.assertEqual(current_detections[1].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[1].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[2].matched, False)
+        self.assertEqual(current_detections[2].velocities, [Point(x=4, y=4)])
+        self.assertEqual(current_detections[2].locations, [Point(x=7, y=7)])
+        self.assertEqual(current_detections[3].matched, True) # phantom
+        self.assertListEqual(current_detections[3].velocities, last_detection_1.velocities)
+        self.assertListEqual(current_detections[3].locations[1:], last_detection_1.locations)
+        self.assertEqual(current_detections[4].matched, True) # phantom
+        self.assertListEqual(current_detections[4].velocities, last_detection_2.velocities)
+        self.assertListEqual(current_detections[4].locations[1:], last_detection_2.locations)
         
