@@ -1,5 +1,6 @@
 import numpy as np
 from mcf.state_estimation.state_estimation_status import StateEstimationStatus
+from mcf.data_types import DetectionRegion
 
 def state_prediction(detection_regions: list[DetectionRegion]) -> StateEstimationStatus:
     # need
@@ -13,4 +14,4 @@ def state_prediction(detection_regions: list[DetectionRegion]) -> StateEstimatio
         # - Process Covariance Matrix
         # - Observation Matrix
 
-    return status
+    return StateEstimationStatus.SUCCESS
