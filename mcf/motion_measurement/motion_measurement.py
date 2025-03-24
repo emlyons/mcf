@@ -35,6 +35,9 @@ class MotionMeasurement:
                 detection_region.velocities.insert(0, measurement)
                 detection_region.velocities_variance.insert(0, variance)
 
+            if status == MotionMeasurementStatus.NO_FEATURES:
+                status = MotionMeasurementStatus.SUCCESS
+
         return status
             
     
