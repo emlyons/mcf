@@ -11,6 +11,11 @@ class TestCenterOfMass(unittest.TestCase):
 	def tearDown(self):
 		return
 
+	def test_center_of_mass_of_empty(self):
+		square = np.zeros((3,4))
+		center_of_mass = get_center_of_mass(square)
+		self.assertEqual(center_of_mass, Point(1.5, 1.0))
+
 	def test_center_of_mass_of_square(self):
 		square = np.ones((3,3))
 		center_of_mass = get_center_of_mass(square)
