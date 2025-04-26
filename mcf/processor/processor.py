@@ -5,7 +5,7 @@ from mcf.detection import Detector, DetectionStatus
 from mcf.motion_measurement import MotionMeasurement, MotionMeasurementStatus
 from mcf.motion_prediction import motion_prediction, MotionPredictionStatus
 from mcf.region_matching import region_matching, RegionMatchingStatus
-from mcf.state_estimation import StateEstimationStatus
+from mcf.state_estimation import state_prediction, StateEstimationStatus
 from mcf.data_types import Frame
 from mcf.common import Queue
 from mcf.display import Display
@@ -69,7 +69,7 @@ class Processor:
             # display
             print(f'count: {self.count}')
             if status == ProcessorStatus.SUCCESS and self.enable_display:
-                self.display.show(current_frame, bbox=True, mask=False, velocity=True)
+                self.display.show(current_frame, bbox=True, mask=False, velocity=False)
                 
             self.count += 1
             
@@ -126,8 +126,7 @@ class Processor:
         return status
     
     def _state_estimation(self, frame: Frame) -> ProcessorStatus:
-        # status = state_estimation(frame)
-        status = StateEstimationStatus.SUCCESS
+        status = state_prediction(frame.detection_regions)
 
         if status == StateEstimationStatus.SUCCESS:
             status = ProcessorStatus.SUCCESS

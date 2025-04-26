@@ -1,8 +1,8 @@
 import numpy as np
 from mcf.data_types.point import Point
 from mcf.data_types.bounding_box import BoundingBox
+from mcf.data_types.kalman_state import KalmanState
 from dataclasses import dataclass, field
-from typing import Optional
 
 @dataclass
 class DetectionRegion:
@@ -17,3 +17,4 @@ class DetectionRegion:
     velocities_variance: list[Point] = field(default_factory=lambda: []) # the variance of the last N velocities
     locations: list[Point] = field(default_factory=lambda: []) # location history
     matched: bool = False # matched in previous frame
+    kalman_state: KalmanState = field(default_factory=lambda: KalmanState()) # Kalman state

@@ -22,11 +22,13 @@ def make_phantom_detection_region(detection_region: DetectionRegion) -> Detectio
             phantom_detection = DetectionRegion(classification=detection_region.classification,
                                                 confidence=detection_region.confidence/1.05,
                                                 mask=detection_region.mask,
-                                                measured_center_of_mass=detection_region.next_center_of_mass,
                                                 measured_bounding_box=detection_region.next_bounding_box,
+                                                measured_center_of_mass=detection_region.next_center_of_mass,
                                                 next_bounding_box=None,
                                                 next_center_of_mass=None,
                                                 velocities=detection_region.velocities,
+                                                velocities_variance=detection_region.velocities_variance,
                                                 locations=[detection_region.next_bounding_box.upper_left + detection_region.next_center_of_mass] + detection_region.locations,
-                                                matched=True)
+                                                matched=True,
+                                                kalman_state=detection_region.kalman_state)
     return phantom_detection
